@@ -1,2 +1,4 @@
 .vscode
 .git
+nginx/logs
+nginx/ssl
