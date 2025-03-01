@@ -134,6 +134,29 @@ services:
     depends_on:
       - mongodb
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost/api  # Изменено с REACT_APP_API_URL на VITE_API_URL
+      - HOST=0.0.0.0  # Добавлено для доступа извне контейнера
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    depends_on:
+      - nginx
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:5173"]  # Исправлен порт
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
 networks:
   app-network:
     driver: bridge
