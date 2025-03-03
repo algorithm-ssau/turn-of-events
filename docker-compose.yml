@@ -157,6 +157,21 @@ services:
       timeout: 5s
       retries: 3
 
+  user_service:
+    build:
+      context: ./user_service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/afisha_db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+    ports:
+      - "1111:8080"
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+
 networks:
   app-network:
     driver: bridge
