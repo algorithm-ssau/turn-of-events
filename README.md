@@ -70,8 +70,8 @@
 
 1. **Клонирование репозитория:**
    ```bash
-   git clone https://github.com/yourusername/puls-goroda.git
-   cd puls-goroda
+   git clone https://github.com/algorithm-ssau/turn-of-events
+   cd turn-of-events
 
 
 # Вклад в проект
