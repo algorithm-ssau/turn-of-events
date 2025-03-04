@@ -159,14 +159,10 @@ services:
 
   user_service:
     build:
-      context: ./user_service
+      context: ./user-service        # Обновлён путь сборки
       dockerfile: Dockerfile
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/afisha_db
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: admin123
     ports:
-      - "8080:8080"
+      - "8000:8000"                  # Обновлён порт с 8080 на 8000
     networks:
       - app-network
     depends_on:
