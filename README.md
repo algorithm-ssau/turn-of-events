@@ -64,7 +64,7 @@
 
 ### Требования
 
-- [Docker](https://www.docker.com/) и [Docker Compose](https://docs.docker.com/compose/) (рекомендуется для локальной разработки)
+- [Docker](https://www.docker.com/) и [Docker Compose](https://docs.docker.com/compose/)
 
 ### Локальная разработка
 
