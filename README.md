@@ -57,7 +57,7 @@
 - **База данных:** PostgreSQL, MongoDB
 - **API:** RESTful API и/или GraphQL
 - **Поиск:** Elasticsearch
-- **Контейнеризация:** Docker (с возможным использованием Docker Compose)
+- **Контейнеризация:** Docker (с использованием Docker Compose)
 - **API Gateway:** Nginx (конфигурация с поддержкой WebSocket и проксированием)
 
 ## Установка и запуск
