@@ -17,6 +17,9 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+    depends_on:
+      - user_service
+      - frontend
     healthcheck:
       test: ["CMD", "nginx", "-t"]
       interval: 30s
