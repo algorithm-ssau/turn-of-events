@@ -9,7 +9,7 @@ const port = 8000;
 app.use(bodyParser.json());
 
 // Маршруты
-app.use('/api/users', userRoutes);
+app.use('/api/user', userRoutes);
 
 // Обработка ошибок
 app.use(errorHandler);
