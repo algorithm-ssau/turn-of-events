@@ -1,19 +1,20 @@
-FROM python:3.10-slim
+# Use official Node.js runtime as base image
+FROM node:18-alpine
 
-# Установка рабочей директории внутри контейнера
+# Set working directory
 WORKDIR /app
 
-# Копирование файла с зависимостями и установка пакетов
-COPY requirements.txt .
+# Copy package files
+COPY package*.json ./
 
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+# Install dependencies
+RUN npm ci
 
-# Копирование всего проекта в контейнер
+# Copy app source code
 COPY . .
 
-# Указываем порт, который будет использоваться приложением
+# Expose port
 EXPOSE 8000
 
-# Команда для запуска uvicorn-сервера
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Start application
+CMD ["npm", "start"]
