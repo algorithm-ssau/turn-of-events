@@ -22,6 +22,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    depends_on:
+      - media_service
 
   postgres:
     image: postgres:latest
@@ -159,14 +161,41 @@ services:
 
   user_service:
     build:
-      context: ./user-service        # Обновлён путь сборки
+      context: ./user-service
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"                  # Обновлён порт с 8080 на 8000
+      - "8000:8000"
     networks:
       - app-network
     depends_on:
       - postgres
+
+  media_service:
+    build:
+      context: ./media-service
+      dockerfile: Dockerfile
+    ports:
+      - "8088:8088"
+    environment:
+      - S3_BUCKET=my-bucket
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - AWS_REGION=us-east-1
+      - S3_ENDPOINT=http://minio:9000
+    depends_on:
+      - minio
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"    # S3 API
+      - "9001:9001"    # Консоль управления
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    volumes:
+      - minio-data:/data
 
 networks:
   app-network:
@@ -178,3 +207,4 @@ volumes:
   kafka_data:
   pgadmin_data:
   mongo_express_data:
+  minio-data:
