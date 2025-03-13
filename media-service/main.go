@@ -29,9 +29,14 @@ var (
 
 func main() {
 	// Читаем переменную S3_ENDPOINT для кастомного endpoint (например, MinIO)
+	logFile, err := os.OpenFile("error.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("Ошибка открытия файла логов: %v", err)
+	}
+	log.SetOutput(logFile)
+
 	s3Endpoint := os.Getenv("S3_ENDPOINT")
 	var cfg aws.Config
-	var err error
 
 	if s3Endpoint != "" {
 		cfg, err = config.LoadDefaultConfig(context.TODO(), config.WithEndpointResolver(
@@ -46,12 +51,12 @@ func main() {
 			}),
 		))
 		if err != nil {
-			log.Fatalf("Ошибка загрузки AWS конфигурации с кастомным endpoint: %v", err)
+			log.Printf("Ошибка загрузки AWS конфигурации с кастомным endpoint: %v", err)
 		}
 	} else {
 		cfg, err = config.LoadDefaultConfig(context.TODO())
 		if err != nil {
-			log.Fatalf("Ошибка загрузки AWS конфигурации: %v", err)
+			log.Printf("Ошибка загрузки AWS конфигурации: %v", err)
 		}
 	}
 
@@ -80,6 +85,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	// Получаем файл из формы с именем "file"
 	file, fileHeader, err := r.FormFile("file")
 	if err != nil {
+		log.Printf("Ошибка получения файла: %v", err)
 		http.Error(w, "Ошибка получения файла", http.StatusBadRequest)
 		return
 	}
@@ -94,6 +100,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		fileURL, err = uploadToS3(file, fileHeader)
 	}
 	if err != nil {
+		log.Printf("Ошибка загрузки файла: %v", err)
 		http.Error(w, "Ошибка загрузки файла: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
