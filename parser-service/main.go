@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gocolly/colly"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -64,7 +65,7 @@ func parseRussianDate(dateStr string) (time.Time, error) {
 }
 
 func main() {
-	// Подключение к MongoDB с учётными данными и использованием имени сервиса из docker-compose ("mongodb")
+	// Подключение к MongoDB с использованием учётных данных и имени сервиса из docker-compose
 	clientOptions := options.Client().ApplyURI("mongodb://admin:admin123@mongodb:27017")
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
@@ -117,12 +118,24 @@ func main() {
 			Price: price,
 		}
 
-		// Записываем событие в MongoDB
-		_, err = collection.InsertOne(context.Background(), event)
+		// Фильтр по уникальным полям для дедупликации
+		filter := bson.M{
+			"title": event.Title,
+			"date":  event.Date,
+			"place": event.Place,
+		}
+		// $setOnInsert вставляет документ только при отсутствии подходящего
+		update := bson.M{"$setOnInsert": event}
+		opts := options.Update().SetUpsert(true)
+		result, err := collection.UpdateOne(context.Background(), filter, update, opts)
 		if err != nil {
 			log.Printf("Ошибка записи в MongoDB: %v\n", err)
 		} else {
-			fmt.Printf("Событие сохранено: %s\n", title)
+			if result.UpsertedCount > 0 {
+				fmt.Printf("Новое событие сохранено: %s\n", event.Title)
+			} else {
+				fmt.Printf("Событие уже существует: %s\n", event.Title)
+			}
 		}
 	})
 
