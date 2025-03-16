@@ -1,25 +1,47 @@
-# Stage 1. Сборка приложения
+# Используем образ Golang
 FROM golang:1.24.1 AS builder
 
 WORKDIR /app
 
-# Копируем файлы модулей и загружаем зависимости
+# Устанавливаем зависимости
 COPY go.mod go.sum ./
 RUN go mod download
 
 # Копируем исходный код
 COPY . .
 
-# Собираем бинарник с отключённым CGO для статической сборки
+# Собираем бинарный файл
 RUN CGO_ENABLED=0 GOOS=linux go build -o parser .
 
-# Stage 2. Формирование финального образа
-FROM alpine:latest
+# Создаём финальный контейнер
+FROM ubuntu:latest
 
-# Добавляем корневые сертификаты
-RUN apk --no-cache add ca-certificates
+WORKDIR /app
 
-# Копируем бинарный файл из стадии сборки
+# Устанавливаем необходимые пакеты
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    unzip \
+    ca-certificates \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxi6 \
+    libxrandr2 \
+    libxss1 \
+    libxtst6 \
+    fonts-liberation \
+    libappindicator3-1 \
+    xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем Google Chrome
+RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt-get update && apt-get install -y ./google-chrome-stable_current_amd64.deb && \
+    rm google-chrome-stable_current_amd64.deb
+
+# Копируем бинарник из builder-контейнера
 COPY --from=builder /app/parser /usr/local/bin/parser
 
 # Запускаем приложение

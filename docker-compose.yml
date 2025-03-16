@@ -173,10 +173,13 @@ services:
     build:
       context: ./parser-service
       dockerfile: Dockerfile
+    environment:
+      - CHROME_BIN=/usr/bin/google-chrome
     depends_on:
       - mongodb
     networks:
       - app-network
+    shm_size: 2gb
     # Если требуется периодический запуск, можно изменить команду:
     # command: sh -c "while true; do ./parser; sleep 3600; done"
 
