@@ -6,9 +6,9 @@ console.log('UserController initialized');
 class UserController {
     static async createUser(req, res) {
         try {
-            const { username, email, phone, status, password } = req.body;
+            const { username, email, phone, password } = req.body;
             
-            if (!username || !email || !phone || !status || !password) {
+            if (!username || !email || !phone || !password) {
                 return res.status(400).json({ message: 'Все поля обязательны для заполнения' });
             }
 

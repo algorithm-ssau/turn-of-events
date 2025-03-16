@@ -5,15 +5,17 @@ const SALT_ROUNDS = 10;
 
 class UserModel {
     static async create(userData) {
-        const { username, email, phone, status, password } = userData;
+        const { username, email, phone, password } = userData;
+        const role = 'user';
+        const status = 'active';
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
         
         const query = `
-            INSERT INTO afisha_db."user" (username, email, phone, status, password)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id, username, email, phone, status, reg_date
+            INSERT INTO afisha_db."user" (username, email, phone, status, role, password)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id, username, email, phone, status, role, reg_date
         `;
-        const values = [username, email, phone, status, hashedPassword];
+        const values = [username, email, phone, status, role, hashedPassword];
         const result = await pool.query(query, values);
         return result.rows[0];
     }
@@ -29,7 +31,7 @@ class UserModel {
     }
 
     static async update(id, userData) {
-        const { username, email, phone, status, password } = userData;
+        const { username, email, phone, status, role, password } = userData;
         let updateFields = [];
         let values = [];
         let valueIndex = 1;
@@ -39,7 +41,26 @@ class UserModel {
             values.push(username);
             valueIndex++;
         }
-        // ...остальные поля...
+        if (email) {
+            updateFields.push(`username = $${valueIndex}`);
+            values.push(email);
+            valueIndex++;
+        }
+        if (phone) {
+            updateFields.push(`username = $${valueIndex}`);
+            values.push(phone);
+            valueIndex++;
+        }
+        if (status) {
+            updateFields.push(`username = $${valueIndex}`);
+            values.push(status);
+            valueIndex++;
+        }
+        if (role) {
+            updateFields.push(`username = $${valueIndex}`);
+            values.push(role);
+            valueIndex++;
+        }
         if (password) {
             const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
             updateFields.push(`password = $${valueIndex}`);
@@ -52,7 +73,7 @@ class UserModel {
             UPDATE afisha_db."user"
             SET ${updateFields.join(', ')}
             WHERE id = $${valueIndex}
-            RETURNING id, username, email, phone, status, reg_date
+            RETURNING id, username, email, phone, status, role, reg_date
         `;
         
         const result = await pool.query(query, values);
