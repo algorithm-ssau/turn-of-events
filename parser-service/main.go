@@ -124,7 +124,6 @@ func main() {
 			"date":  event.Date,
 			"place": event.Place,
 		}
-		// $setOnInsert вставляет документ только при отсутствии подходящего
 		update := bson.M{"$setOnInsert": event}
 		opts := options.Update().SetUpsert(true)
 		result, err := collection.UpdateOne(context.Background(), filter, update, opts)
@@ -139,7 +138,13 @@ func main() {
 		}
 	})
 
-	// Обработка пагинации (если требуется)
+	// Логирование запроса для отладки пагинации
+	c.OnRequest(func(r *colly.Request) {
+		fmt.Println("Запрос:", r.URL.String())
+	})
+
+	// Обработка пагинации
+	// Проверьте, соответствует ли селектор фактической структуре страницы
 	c.OnHTML(".pagination-next", func(e *colly.HTMLElement) {
 		nextPage := e.Request.AbsoluteURL(e.Attr("href"))
 		fmt.Println("Переход на следующую страницу:", nextPage)
