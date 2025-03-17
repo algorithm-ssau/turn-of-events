@@ -34,11 +34,20 @@ func main() {
 
 	collection := client.Database("afisha").Collection("events")
 
+	topic := os.Getenv("TOPIC")
+	if topic == "" {
+		topic = "parsing"
+	}
+
+	groupID := os.Getenv("GROUP_ID")
+	if groupID == "" {
+		groupID = "1"
+	}
 	// Настройка Kafka
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers: []string{kafkaBroker},
-		Topic:   "parser-topic",
-		GroupID: "parser-group",
+		Topic:   topic,
+		GroupID: groupID,
 	})
 	defer reader.Close()
 
