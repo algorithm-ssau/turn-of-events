@@ -68,7 +68,7 @@ services:
     networks:
       - app-network
 
-  kafka:
+  kafka-1:
     image: confluentinc/cp-kafka:latest
     depends_on:
       - zookeeper
@@ -77,12 +77,36 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
     volumes:
-      - kafka_data:/var/lib/kafka/data
+      - kafka_data_1:/var/lib/kafka/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  kafka-2:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+      - kafka-1
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29093,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+    volumes:
+      - kafka_data_2:/var/lib/kafka/data
     networks:
       - app-network
     healthcheck:
@@ -111,12 +135,13 @@ services:
       - "8082:8080"
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka-1:29092,kafka-2:29093
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
     networks:
       - app-network
     depends_on:
-      - kafka
+      - kafka-1
+      - kafka-2
       - zookeeper
 
   mongo-ui:
@@ -174,14 +199,17 @@ services:
       context: ./parser-service
       dockerfile: Dockerfile
     environment:
-      - CHROME_BIN=/usr/bin/google-chrome
+      - KAFKA_BROKER=kafka-1:29092
+      - MONGO_URI=mongodb://admin:admin123@mongodb:27017
+      - GROUP_ID=1
+      - TOPIC=parsing
     depends_on:
       - mongodb
+      - kafka-1
+      - kafka-2
+      - zookeeper
     networks:
       - app-network
-    shm_size: 2gb
-    # Если требуется периодический запуск, можно изменить команду:
-    # command: sh -c "while true; do ./parser; sleep 3600; done"
 
 networks:
   app-network:
@@ -190,6 +218,7 @@ networks:
 volumes:
   postgres_data:
   mongodb_data:
-  kafka_data:
+  kafka_data_1:
+  kafka_data_2:
   pgadmin_data:
   mongo_express_data:
