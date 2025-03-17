@@ -199,7 +199,7 @@ services:
       context: ./parser-service
       dockerfile: Dockerfile
     environment:
-      - KAFKA_BROKER=kafka-1:29092,kafka-2:29093
+      - KAFKA_BROKER=kafka-1:29092
       - MONGO_URI=mongodb://admin:admin123@mongodb:27017
       - GROUP_ID=1
       - TOPIC=parsing
