@@ -142,8 +142,8 @@ services:
       - "5173:5173"
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=http://localhost/api  # Изменено с REACT_APP_API_URL на VITE_API_URL
-      - HOST=0.0.0.0  # Добавлено для доступа извне контейнера
+      - VITE_API_URL=http://localhost/api
+      - HOST=0.0.0.0
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -152,21 +152,36 @@ services:
     depends_on:
       - nginx
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:5173"]  # Исправлен порт
+      test: ["CMD", "wget", "--spider", "http://localhost:5173"]
       interval: 10s
       timeout: 5s
       retries: 3
 
   user_service:
     build:
-      context: ./user-service        # Обновлён путь сборки
+      context: ./user-service
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"                  # Обновлён порт с 8080 на 8000
+      - "8000:8000"
     networks:
       - app-network
     depends_on:
       - postgres
+
+  # Новый сервис для Go-парсера
+  parser:
+    build:
+      context: ./parser-service
+      dockerfile: Dockerfile
+    environment:
+      - CHROME_BIN=/usr/bin/google-chrome
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+    shm_size: 2gb
+    # Если требуется периодический запуск, можно изменить команду:
+    # command: sh -c "while true; do ./parser; sleep 3600; done"
 
 networks:
   app-network:
