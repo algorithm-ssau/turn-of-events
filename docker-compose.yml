@@ -174,7 +174,8 @@ services:
       context: ./parser-service
       dockerfile: Dockerfile
     environment:
-      - CHROME_BIN=/usr/bin/google-chrome
+      - KAFKA_BROKER=kafka:29092
+      - MONGO_URI=mongodb://admin:admin123@mongodb:27017
     depends_on:
       - mongodb
     networks:
