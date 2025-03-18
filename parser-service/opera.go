@@ -13,15 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Event struct {
-	Title string
-	Date  string
-	Time  string
-	Price string
-	Place string
-}
-
-func getEvents() ([]Event, error) {
+func getOperaEvents() ([]Event, error) {
 	url := "https://opera-samara.ru/afisha/"
 	resp, err := http.Get(url)
 	if err != nil {
@@ -45,10 +37,11 @@ func getEvents() ([]Event, error) {
 		title := strings.TrimSpace(s.Find(".name").Text())
 		genre := strings.TrimSpace(s.Find(".inf.genre").Text())
 		duration := strings.TrimSpace(s.Find(".lenght").Text())
+		ImageUrl, _ := s.Find("no_print").Attr("src")
 		link, _ := s.Find("a").Attr("href")
 
 		// Отладочный вывод
-		fmt.Printf("Найдено: %s, %s, %s, %s, %s, %s\n", date, time, title, genre, duration, link)
+		fmt.Printf("Найдено: %s, %s, %s, %s, %s, %s, %s\n", date, time, title, genre, duration, ImageUrl, link)
 
 		if title != "" && date != "" {
 			events = append(events, Event{

@@ -87,9 +87,9 @@ services:
       - app-network
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092"]
-      interval: 30s
+      interval: 20s
       timeout: 10s
-      retries: 3
+      retries: 5
 
   kafka-2:
     image: confluentinc/cp-kafka:latest
@@ -111,9 +111,9 @@ services:
       - app-network
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092"]
-      interval: 30s
+      interval: 20s
       timeout: 10s
-      retries: 3
+      retries: 5
 
   pgadmin:
     image: dpage/pgadmin4:latest

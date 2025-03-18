@@ -68,8 +68,8 @@ func main() {
 			log.Printf("Получено сообщение: %s\n", string(msg.Value))
 
 			// Запуск парсинга по запросу
-			if string(msg.Value) == "start" {
-				events, err := getEvents()
+			if string(msg.Value) == "startOpera" {
+				events, err := getOperaEvents()
 				if err != nil {
 					log.Printf("Ошибка парсинга: %v\n", err)
 					continue
