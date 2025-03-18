@@ -79,4 +79,4 @@
 * Лебедев Евгений [F4NTOM41K](https://github.com/F4NTOM41K) - 
 * Михальчук Данила [ded-mikhalych](https://github.com/ded-mikhalych) - 
 * Паршин Никита [Withotic](https://github.com/Withotic) - 
-* Дагаев Давнила [Repkol](https://github.com/Repkol) - 
+* Дагаев Данила [Repkol](https://github.com/Repkol) - 
