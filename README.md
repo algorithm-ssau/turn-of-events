@@ -44,6 +44,12 @@
 - **Media Service:** Обработка и хранение мультимедийных файлов (изображения, видео).
 - **Analytics Service:** Сбор и анализ статистических данных о работе сервиса.
 
+<picture>
+
+ <img alt="APPLICATION ARCHITECTURE" src="https://github.com/algorithm-ssau/turn-of-events/blob/master/Turn%20Of%20Events.png">
+</picture>
+
+
 Также используются вспомогательные компоненты:
 - **Service Discovery & Registry:** Автоматическое обнаружение микросервисов.
 - **Centralized Configuration Service:** Централизованное управление конфигурацией.
