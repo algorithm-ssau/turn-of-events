@@ -81,8 +81,8 @@
 
 
 # Вклад в проект
-* Лысов Илья [SecurityTrip](https://github.com/SecurityTrip) - Капитан команды, 
+* Лысов Илья [SecurityTrip](https://github.com/SecurityTrip) - Team Lead, Backend 
 * Лебедев Евгений [F4NTOM41K](https://github.com/F4NTOM41K) - 
-* Михальчук Данила [ded-mikhalych](https://github.com/ded-mikhalych) - 
+* Михальчук Данила [ded-mikhalych](https://github.com/ded-mikhalych) - Backend
 * Паршин Никита [Withotic](https://github.com/Withotic) - 
 * Дагаев Данила [Repkol](https://github.com/Repkol) - 
