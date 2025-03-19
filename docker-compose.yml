@@ -213,6 +213,21 @@ services:
     networks:
       - app-network
 
+  admin_service:
+    build:
+      context: ./utils-service
+      dockerfile: Dockerfile
+    ports:
+      - "8182:8182"
+    environment:
+      - KAFKA_BROKER=kafka-1:29092
+      - GROUP_ID=1
+      - TOPIC=parsing
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+
 networks:
   app-network:
     driver: bridge
