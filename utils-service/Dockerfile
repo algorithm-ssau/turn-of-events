@@ -26,7 +26,7 @@ WORKDIR /app
 COPY --from=builder /app/utils .
 
 # Открываем порт, который слушает приложение
-EXPOSE 8080
+EXPOSE 8182
 
 # Запускаем приложение
 CMD ["./utils"]

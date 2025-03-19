@@ -31,6 +31,6 @@ func main() {
 	router := gin.Default()
 	router.Use(CORSMiddleware()) // Подключаем CORS middleware
 
-	router.POST("/parce", parceHandler)
-	router.Run("0.0.0.0:8080")
+	router.POST("api/admin/parce", parceHandler)
+	router.Run("0.0.0.0:8182")
 }
