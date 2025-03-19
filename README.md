@@ -46,7 +46,7 @@
 
 <picture>
 
- <img alt="APPLICATION ARCHITECTURE" src="https://github.com/algorithm-ssau/turn-of-events/blob/master/Turn%20Of%20Events.png">
+ <img alt="APPLICATION ARCHITECTURE" src="https://github.com/algorithm-ssau/turn-of-events/blob/master/APP%20ARCHITECTURE.jpg">
 </picture>
 
 
