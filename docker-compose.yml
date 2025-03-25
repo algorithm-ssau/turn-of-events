@@ -228,6 +228,22 @@ services:
     depends_on:
       - postgres
 
+  rate-calculator:
+    build:
+      context: ./rate-calculator
+      dockerfile: Dockerfile
+    environment:
+      # TODO make topic in Kafka and change DB name
+      - KAFKA_BROKERS=kafka-1:29092,kafka-2:29093
+      - KAFKA_TOPIC=product_rating_update
+      - PG_CONN_STR=dbname=your_db user=admin password=admin123 host=postgres
+    networks:
+      - app-network
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - postgres
+
 networks:
   app-network:
     driver: bridge
