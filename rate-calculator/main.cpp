@@ -69,9 +69,12 @@ int main() {
                 
                 // Пример: сообщение содержит id товара и новый рейтинг, разделенные пробелом
                 std::istringstream iss(payload);
+                // Message type: key: <any> value: <event_id> <rating>
                 int event_id;
                 int rating;
                 if (iss >> event_id >> rating) {
+                    std::cout << "event_id:  " << event_id << std::endl;
+                    std::cout << "rating: " << rating <<  std::endl;
                     try {
                         // Устанавливаем соединение с PostgreSQL
                         pqxx::connection C(pg_conn_str);
