@@ -67,19 +67,35 @@ int main() {
                 
                 // Пример: сообщение содержит id товара и новый рейтинг, разделенные пробелом
                 std::istringstream iss(payload);
-                int product_id;
-                double new_rating;
-                if (iss >> product_id >> new_rating) {
+                int event_id;
+                int rating;
+                if (iss >> event_id >> rating) {
                     try {
                         // Устанавливаем соединение с PostgreSQL
                         pqxx::connection C(pg_conn_str);
                         pqxx::work W(C);
-                        // Формируем SQL-запрос для обновления рейтинга товара
-                        std::string sql = "UPDATE products SET rating = " + W.quote(new_rating) +
-                                          " WHERE id = " + W.quote(product_id) + ";";
-                        W.exec(sql);
+
+                        // 1. Вставляем новую оценку в таблицу оценок
+                        std::string sqlInsert = "INSERT INTO ratings (event_id, rating) VALUES (" 
+                                                + W.quote(event_id) + ", " + W.quote(rating) + ");";
+                        W.exec(sqlInsert);
+
+                        // 2. Получаем среднюю оценку для данного мероприятия
+                        pqxx::result R = W.exec("SELECT AVG(rating) AS avg_rating FROM ratings WHERE event_id = " 
+                                                + W.quote(event_id) + ";");
+                        double avgRating = 0.0;
+                        if (!R.empty() && !R[0]["avg_rating"].is_null()) {
+                            avgRating = R[0]["avg_rating"].as<double>();
+                        }
+
+                        // 3. Обновляем в таблице мероприятий средний рейтинг данного мероприятия
+                        std::string sqlUpdate = "UPDATE events SET average_rating = " + W.quote(avgRating) +
+                                                " WHERE id = " + W.quote(event_id) + ";";
+                        W.exec(sqlUpdate);
+
                         W.commit();
-                        std::cout << "Обновлен товар " << product_id << " с новым рейтингом " << new_rating << std::endl;
+                        std::cout << "Для мероприятия " << event_id << " добавлена оценка " << rating 
+                                << ", средний рейтинг обновлен до " << avgRating << std::endl;
                     } catch (const std::exception &e) {
                         std::cerr << "Ошибка работы с БД: " << e.what() << std::endl;
                     }
