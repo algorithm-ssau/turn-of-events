@@ -54,6 +54,8 @@ int main() {
     if (err != RdKafka::ERR_NO_ERROR) {
         std::cerr << "Ошибка подписки: " << RdKafka::err2str(err) << std::endl;
         return 1;
+    }else{
+        std::cout << "Подписка на топик " << topic << " выполнена" << std::endl;
     }
     
     while (run) {
