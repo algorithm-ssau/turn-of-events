@@ -1,0 +1,44 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Images to Personal ghcr.io"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: 'v1.20.0'
+
+      - name: Configure kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Update Kubernetes Deployments
+        run: |
+          # Проходим по всем директориям, содержащим Dockerfile
+          for dir in $(find . -name 'Dockerfile' -exec dirname {} \;); do
+            # Получаем имя директории и приводим его к нижнему регистру
+            image_name=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
+            
+            # Формируем полный тег образа
+            full_tag="ghcr.io/securitytrip/${image_name}:latest"
+            
+            echo "Обновляем деплоймент для '$image_name'"
+            # Обновляем образ контейнера в deployment-е
+            kubectl set image deployment/${image_name}-deployment ${image_name}=${full_tag} --record
+            
+            # Ожидаем завершения rollout-а
+            kubectl rollout status deployment/${image_name}-deployment
+          done
