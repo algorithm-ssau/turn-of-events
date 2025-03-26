@@ -26,8 +26,11 @@ jobs:
             # Получаем имя директории и приводим его к нижнему регистру
             image_name=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
             
+            # Задаем имя пользователя в нижнем регистре
+            username="securitytrip"
+            
             # Формируем полный тег образа
-            full_tag="ghcr.io/SecurityTrip/$image_name:latest"
+            full_tag="ghcr.io/$username/$image_name:latest"
             
             # Выводим отладочную информацию
             echo "Обработка директории: $dir"
