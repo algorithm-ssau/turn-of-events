@@ -23,6 +23,6 @@ jobs:
         run: |
           for dir in $(find . -name 'Dockerfile' -exec dirname {} \;); do
             image_name=$(basename $dir)
-            docker build -t ghcr.io/<your-username>/$image_name:latest $dir
-            docker push ghcr.io/<your-username>/$image_name:latest
+            docker build -t ghcr.io/SecurityTrip/$image_name:latest $dir
+            docker push ghcr.io/SecurityTrip/$image_name:latest
           done
