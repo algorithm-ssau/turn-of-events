@@ -21,8 +21,20 @@ jobs:
 
       - name: Build and push Docker images
         run: |
+          # Проходим по всем директориям, содержащим Dockerfile
           for dir in $(find . -name 'Dockerfile' -exec dirname {} \;); do
-            image_name=$(basename $dir | tr '[:upper:]' '[:lower:]')
-            docker build -t ghcr.io/SecurityTrip/$image_name:latest $dir
-            docker push ghcr.io/SecurityTrip/$image_name:latest
+            # Получаем имя директории и приводим его к нижнему регистру
+            image_name=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
+            
+            # Формируем полный тег образа
+            full_tag="ghcr.io/SecurityTrip/$image_name:latest"
+            
+            # Выводим отладочную информацию
+            echo "Обработка директории: $dir"
+            echo "Сформированное имя образа: $image_name"
+            echo "Полный тег: $full_tag"
+            
+            # Выполняем сборку и отправку образа
+            docker build -t "$full_tag" "$dir"
+            docker push "$full_tag"
           done
