@@ -12,6 +12,8 @@ spec:
       labels:
         app: nginx
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
       - name: nginx
         image: ghcr.io/securitytrip/nginx:latest
@@ -59,6 +61,8 @@ spec:
       labels:
         app: frontend
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
       - name: frontend
         image: ghcr.io/securitytrip/frontend:latest
@@ -91,6 +95,8 @@ spec:
       labels:
         app: user-service
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
       - name: user-service
         image: ghcr.io/securitytrip/user-service:latest
@@ -133,6 +139,8 @@ spec:
       labels:
         app: parser-service
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
       - name: parser
         image: ghcr.io/securitytrip/parser-service:latest
@@ -167,6 +175,8 @@ spec:
       labels:
         app: utils-service
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
       - name: utils
         image: ghcr.io/securitytrip/utils-service:latest
@@ -199,6 +209,8 @@ spec:
       labels:
         app: rate-calculator
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
       - name: rate-calculator
         image: ghcr.io/securitytrip/rate-calculator:latest
