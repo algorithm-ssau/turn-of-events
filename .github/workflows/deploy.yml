@@ -26,20 +26,56 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
-      - name: Update Kubernetes Deployments
+      - name: Check and Create Deployments
         run: |
-          # Проходим по всем директориям, содержащим Dockerfile
+          # Проверяем существование deployment.yml
+          if [ ! -f kubernetes/deployment.yml ]; then
+            echo "Error: deployment.yml not found!"
+            exit 1
+          fi
+          
+          # Получаем список существующих деплойментов
+          existing_deployments=$(kubectl get deployments -o name)
+          
+          # Если деплойментов нет, применяем весь файл конфигурации
+          if [ -z "$existing_deployments" ]; then
+            echo "No deployments found. Applying full configuration..."
+            kubectl apply -f kubernetes/deployment.yml
+          fi
+
+      - name: Update Images in Deployments
+        run: |
+          # Обновляем образы для каждого сервиса из build-push
           for dir in $(find . -name 'Dockerfile' -exec dirname {} \;); do
-            # Получаем имя директории и приводим его к нижнему регистру
             image_name=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
-            
-            # Формируем полный тег образа
             full_tag="ghcr.io/securitytrip/${image_name}:latest"
             
-            echo "Обновляем деплоймент для '$image_name'"
-            # Обновляем образ контейнера в deployment-е
-            kubectl set image deployment/${image_name}-deployment ${image_name}=${full_tag} --record
+            echo "Updating deployment for $image_name with image $full_tag"
             
-            # Ожидаем завершения rollout-а
-            kubectl rollout status deployment/${image_name}-deployment
+            # Проверяем существование деплоймента
+            if kubectl get deployment/${image_name}-deployment &>/dev/null; then
+              # Обновляем образ
+              kubectl set image deployment/${image_name}-deployment ${image_name}=${full_tag} --record
+              
+              # Ждем успешного обновления
+              kubectl rollout status deployment/${image_name}-deployment
+            else
+              echo "Warning: Deployment ${image_name}-deployment not found"
+            fi
+          done
+
+      - name: Verify Deployments
+        run: |
+          echo "Verifying all deployments..."
+          kubectl get deployments
+          
+          # Проверяем статус всех деплойментов
+          deployments=("nginx" "frontend" "user-service" "parser-service" "utils-service" "rate-calculator")
+          
+          for dep in "${deployments[@]}"; do
+            echo "Checking status of ${dep}-deployment..."
+            if ! kubectl rollout status deployment/${dep}-deployment --timeout=300s; then
+              echo "Error: Deployment ${dep}-deployment failed"
+              exit 1
+            fi
           done
