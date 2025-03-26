@@ -22,7 +22,7 @@ jobs:
       - name: Build and push Docker images
         run: |
           for dir in $(find . -name 'Dockerfile' -exec dirname {} \;); do
-            image_name=$(basename $dir)
+            image_name=$(basename $dir | tr '[:upper:]' '[:lower:]')
             docker build -t ghcr.io/SecurityTrip/$image_name:latest $dir
             docker push ghcr.io/SecurityTrip/$image_name:latest
           done
