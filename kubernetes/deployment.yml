@@ -31,7 +31,7 @@ spec:
           subPath: nginx.conf
         - name: nginx-conf-d
           mountPath: /etc/nginx/conf.d
-        healthcheck:
+        livenessProbe:
           httpGet:
             path: /health
             port: 80
