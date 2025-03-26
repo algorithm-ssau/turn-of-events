@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Нужно для сравнения с предыдущим коммитом
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
@@ -19,22 +21,40 @@ jobs:
           username: SecurityTrip
           password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
+      - name: Get changed files
+        id: changed-files
+        run: |
+          # Получаем список измененных файлов
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          echo "Changed files: $CHANGED_FILES"
+          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker images
         run: |
-          # Проходим по всем директориям, содержащим Dockerfile
+          # Получаем список всех директорий с Dockerfile
           for dir in $(find . -name 'Dockerfile' -exec dirname {} \;); do
+            # Проверяем, были ли изменения в этой директории
+            CHANGED=false
+            for file in $(echo "${{ steps.changed-files.outputs.changed_files }}"); do
+              if [[ $file == ${dir}/* ]]; then
+                CHANGED=true
+                break
+              fi
+            done
+            
+            # Если изменений не было, пропускаем сборку
+            if [ "$CHANGED" = false ]; then
+              echo "Пропускаем $dir - нет изменений"
+              continue
+            fi
+            
             # Получаем имя директории и приводим его к нижнему регистру
             image_name=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
-            
-            # Задаем имя пользователя в нижнем регистре
             username="securitytrip"
-            
-            # Формируем полный тег образа
             full_tag="ghcr.io/$username/$image_name:latest"
             
-            # Выводим отладочную информацию
-            echo "Обработка директории: $dir"
-            echo "Сформированное имя образа: $image_name"
+            echo "Обнаружены изменения в $dir"
+            echo "Сборка образа: $image_name"
             echo "Полный тег: $full_tag"
             
             # Выполняем сборку и отправку образа
