@@ -1,10 +1,9 @@
 module afisha_parser
 
 go 1.24.1
-
 require (
 	github.com/PuerkitoBio/goquery v1.10.2
-	github.com/gofiber/fiber/v2 v2.52.2
+	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/segmentio/kafka-go v0.4.47
 	go.mongodb.org/mongo-driver v1.17.3
 )
