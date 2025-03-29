@@ -33,10 +33,14 @@ jobs:
         run: |
           # Получаем список всех директорий с Dockerfile
           for dir in $(find . -name 'Dockerfile' -exec dirname {} \;); do
+            # Получаем относительный путь директории без ./
+            dir_without_prefix=${dir#./}
+            
             # Проверяем, были ли изменения в этой директории
             CHANGED=false
             for file in $(echo "${{ steps.changed-files.outputs.changed_files }}"); do
-              if [[ $file == ${dir}/* ]]; then
+              # Проверяем, начинается ли путь файла с имени директории
+              if [[ $file == $dir_without_prefix* ]]; then
                 CHANGED=true
                 break
               fi
