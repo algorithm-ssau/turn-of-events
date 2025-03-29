@@ -1,0 +1,67 @@
+name: Build and Push Docker Images to Personal ghcr.io
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Нужно для сравнения с предыдущим коммитом
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: SecurityTrip
+          password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          # Получаем список измененных файлов
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          echo "Changed files: $CHANGED_FILES"
+          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker images
+        run: |
+          # Получаем список всех директорий с Dockerfile
+          for dir in $(find . -name 'Dockerfile' -exec dirname {} \;); do
+            # Получаем относительный путь директории без ./
+            dir_without_prefix=${dir#./}
+            
+            # Проверяем, были ли изменения в этой директории
+            CHANGED=false
+            for file in $(echo "${{ steps.changed-files.outputs.changed_files }}"); do
+              # Проверяем, начинается ли путь файла с имени директории
+              if [[ $file == $dir_without_prefix* ]]; then
+                CHANGED=true
+                break
+              fi
+            done
+            
+            # Если изменений не было, пропускаем сборку
+            if [ "$CHANGED" = false ]; then
+              echo "Пропускаем $dir - нет изменений"
+              continue
+            fi
+            
+            # Получаем имя директории и приводим его к нижнему регистру
+            image_name=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
+            username="securitytrip"
+            full_tag="ghcr.io/$username/$image_name:latest"
+            
+            echo "Обнаружены изменения в $dir"
+            echo "Сборка образа: $image_name"
+            echo "Полный тег: $full_tag"
+            
+            # Выполняем сборку и отправку образа
+            docker build -t "$full_tag" "$dir"
+            docker push "$full_tag"
+          done

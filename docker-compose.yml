@@ -85,6 +85,7 @@ services:
       - kafka_data_1:/var/lib/kafka/data
     networks:
       - app-network
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092"]
       interval: 20s
@@ -109,6 +110,7 @@ services:
       - kafka_data_2:/var/lib/kafka/data
     networks:
       - app-network
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092"]
       interval: 20s
@@ -210,6 +212,37 @@ services:
       - zookeeper
     networks:
       - app-network
+
+  admin_service:
+    build:
+      context: ./utils-service
+      dockerfile: Dockerfile
+    ports:
+      - "8182:8182"
+    environment:
+      - KAFKA_BROKER=kafka-1:29092
+      - GROUP_ID=1
+      - TOPIC=parsing
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+
+  rate-calculator:
+    build:
+      context: ./rate-calculator
+      dockerfile: Dockerfile
+    environment:
+      # TODO make topic in Kafka and change DB name
+      - KAFKA_BROKERS=kafka-1:29092,kafka-2:29093
+      - KAFKA_TOPIC=product_rating_update
+      - PG_CONN_STR=dbname=your_db user=admin password=admin123 host=postgres
+    networks:
+      - app-network
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - postgres
 
 networks:
   app-network:
