@@ -1,5 +1,5 @@
 # Этап сборки
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24.1-alpine AS builder
 
 # Устанавливаем переменные окружения для статической сборки
 ENV CGO_ENABLED=0

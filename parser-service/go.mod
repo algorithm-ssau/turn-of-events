@@ -1,6 +1,7 @@
 module afisha_parser
 
 go 1.24.1
+
 require (
 	github.com/PuerkitoBio/goquery v1.10.2
 	github.com/gofiber/fiber/v2 v2.52.5
