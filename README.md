@@ -1,3 +1,5 @@
+[![Dependabot Updates](https://github.com/algorithm-ssau/turn-of-events/actions/workflows/dependabot/dependabot-updates/badge.svg?branch=master)](https://github.com/algorithm-ssau/turn-of-events/actions/workflows/dependabot/dependabot-updates)
+[![Build and Push Docker Images to Personal ghcr.io](https://github.com/algorithm-ssau/turn-of-events/actions/workflows/build-push.yml/badge.svg?branch=master)](https://github.com/algorithm-ssau/turn-of-events/actions/workflows/build-push.yml)
 # Оборот Событий
 
 **Оборот Событий** – это веб-сервис афиши городских мероприятий, построенный на основе микросервисной архитектуры. Проект предназначен для удобного поиска, размещения и управления городскими событиями, объединяя как пользователей, так и организаторов мероприятий.
