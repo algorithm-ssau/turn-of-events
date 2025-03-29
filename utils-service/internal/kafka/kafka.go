@@ -1,4 +1,4 @@
-package main
+package kafka
 
 import (
 	"os"
@@ -6,9 +6,11 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-var writer *kafka.Writer
+type KafkaClient struct {
+	Writer *kafka.Writer
+}
 
-func kafkainit() (*kafka.Writer, error) {
+func NewKafkaClient() (*KafkaClient, error) {
 	// Читаем адрес брокера Kafka из переменной окружения
 	kafkaBroker := os.Getenv("KAFKA_BROKER")
 	if kafkaBroker == "" {
@@ -20,16 +22,18 @@ func kafkainit() (*kafka.Writer, error) {
 		topic = "parsing"
 	}
 
-	groupID := os.Getenv("GROUP_ID")
-	if groupID == "" {
-		groupID = "1"
-	}
-	// Настройка Kafka
+	// Настройка Kafka writer
 	writer := kafka.NewWriter(kafka.WriterConfig{
 		Brokers: []string{kafkaBroker},
 		Topic:   topic,
 	})
 
-	return writer, nil
+	return &KafkaClient{
+		Writer: writer,
+	}, nil
+}
 
+// Close закрывает соединение с Kafka
+func (k *KafkaClient) Close() error {
+	return k.Writer.Close()
 }
