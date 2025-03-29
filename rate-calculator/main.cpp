@@ -85,13 +85,18 @@ int main() {
                                                 + W.quote(event_id) + ", " + W.quote(rating) + ");";
                         W.exec(sqlInsert);
 
-                        // 2. Получаем среднюю оценку для данного мероприятия
-                        pqxx::result R = W.exec("SELECT AVG(rating) AS avg_rating FROM ratings WHERE event_id = " 
+                        // 2. Получаем все оценки для данного мероприятия
+                        pqxx::result R = W.exec("SELECT rating FROM ratings WHERE event_id = " 
                                                 + W.quote(event_id) + ";");
-                        double avgRating = 0.0;
-                        if (!R.empty() && !R[0]["avg_rating"].is_null()) {
-                            avgRating = R[0]["avg_rating"].as<double>();
+                        
+                        // Вычисляем среднее значение
+                        long double sum = 0.0;
+                        long int count = 0;
+                        for (const auto &row : R) {
+                            sum += row["rating"].as<int>();
+                            count++;
                         }
+                        double avgRating = count > 0 ? sum / count : 0.0;
 
                         // 3. Обновляем в таблице мероприятий средний рейтинг данного мероприятия
                         std::string sqlUpdate = "UPDATE events SET average_rating = " + W.quote(avgRating) +
