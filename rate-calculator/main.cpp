@@ -4,129 +4,150 @@
 #include <cstdlib>
 #include <librdkafka/rdkafkacpp.h>
 #include <pqxx/pqxx>
+#include <memory>
 
-// Флаг для корректного завершения приложения
+// Константы
+namespace config {
+    constexpr int KAFKA_TIMEOUT_MS = 1000;
+    constexpr const char* DEFAULT_BROKERS = "localhost:9092";
+    constexpr const char* DEFAULT_TOPIC = "product_rating_update";
+    constexpr const char* DEFAULT_PG_CONN = "dbname=your_db user=your_user password=your_password host=your_host";
+}
+
+// Флаг для завершения
 volatile bool run = true;
-static void sigterm (int sig) {
+
+class MessageProcessor {
+private:
+    std::string pg_conn_str_;
+    std::unique_ptr<pqxx::connection> conn_;
+
+    void ensureConnection() {
+        if (!conn_ || !conn_->is_open()) {
+            conn_ = std::make_unique<pqxx::connection>(pg_conn_str_);
+        }
+    }
+
+    void updateRating(int event_id, int rating) {
+        ensureConnection();
+        pqxx::work W(*conn_);
+
+        // Используем prepared statements для оптимизации
+        static const std::string insert_query = 
+            "INSERT INTO ratings (event_id, rating) VALUES ($1, $2)";
+        static const std::string update_query = 
+            "WITH new_avg AS ("
+            "  SELECT AVG(rating) AS avg_rating "
+            "  FROM ratings "
+            "  WHERE event_id = $1"
+            ") "
+            "UPDATE events "
+            "SET average_rating = (SELECT avg_rating FROM new_avg) "
+            "WHERE id = $1";
+
+        W.exec_params(insert_query, event_id, rating);
+        W.exec_params(update_query, event_id);
+        W.commit();
+    }
+
+public:
+    explicit MessageProcessor(const std::string& conn_str) 
+        : pg_conn_str_(conn_str) {}
+
+    void processMessage(const std::string& payload) {
+        std::istringstream iss(payload);
+        int event_id, rating;
+
+        if (!(iss >> event_id >> rating)) {
+            throw std::runtime_error("Неверный формат сообщения");
+        }
+
+        std::cout << "Обработка: event_id=" << event_id << ", rating=" << rating << std::endl;
+        
+        try {
+            updateRating(event_id, rating);
+            std::cout << "Рейтинг обновлен для мероприятия " << event_id << std::endl;
+        } catch (const std::exception& e) {
+            throw std::runtime_error(std::string("Ошибка БД: ") + e.what());
+        }
+    }
+};
+
+std::string getEnvVar(const std::string& key, const std::string& default_value) {
+    const char* val = std::getenv(key.c_str());
+    return val ? val : default_value;
+}
+
+static void sigterm(int) {
     run = false;
 }
 
-// Функция для получения переменной окружения с проверкой
-std::string getEnvVar(const std::string &key, const std::string &default_value = "") {
-    const char* val = std::getenv(key.c_str());
-    return val == nullptr ? default_value : std::string(val);
-}
-
 int main() {
-    // Обработка сигналов завершения
     signal(SIGINT, sigterm);
     signal(SIGTERM, sigterm);
 
-    // Получение параметров подключения из переменных окружения
-    std::string brokers = getEnvVar("KAFKA_BROKERS", "localhost:9092");
-    std::string topic = getEnvVar("KAFKA_TOPIC", "product_rating_update");
-    std::string pg_conn_str = getEnvVar("PG_CONN_STR", "dbname=your_db user=your_user password=your_password host=your_host");
+    try {
+        // Конфигурация
+        const std::string brokers = getEnvVar("KAFKA_BROKERS", config::DEFAULT_BROKERS);
+        const std::string topic = getEnvVar("KAFKA_TOPIC", config::DEFAULT_TOPIC);
+        const std::string pg_conn_str = getEnvVar("PG_CONN_STR", config::DEFAULT_PG_CONN);
 
-    std::string errstr;
-    
-    // Создаем конфигурацию Kafka
-    RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
-    if (conf->set("bootstrap.servers", brokers, errstr) != RdKafka::Conf::CONF_OK) {
-        std::cerr << "Ошибка установки bootstrap.servers: " << errstr << std::endl;
-        return 1;
-    }
-    if (conf->set("group.id", "rating_group", errstr) != RdKafka::Conf::CONF_OK) {
-        std::cerr << "Ошибка установки group.id: " << errstr << std::endl;
-        return 1;
-    }
-    
-    // Создаем консьюмер
-    RdKafka::KafkaConsumer *consumer = RdKafka::KafkaConsumer::create(conf, errstr);
-    delete conf;
-    if (!consumer) {
-        std::cerr << "Не удалось создать consumer: " << errstr << std::endl;
-        return 1;
-    }
-    
-    // Подписываемся на топик
-    std::vector<std::string> topics = { topic };
-    RdKafka::ErrorCode err = consumer->subscribe(topics);
-    if (err != RdKafka::ERR_NO_ERROR) {
-        std::cerr << "Ошибка подписки: " << RdKafka::err2str(err) << std::endl;
-        return 1;
-    }else{
-        std::cout << "Подписка на топик " << topic << " выполнена" << std::endl;
-    }
-    
-    while (run) {
-        // Получаем сообщение из Kafka с таймаутом 1000 мс
-        RdKafka::Message *msg = consumer->consume(1000);
-        switch (msg->err()) {
-            case RdKafka::ERR_NO_ERROR: {
-                // Сообщение получено, обрабатываем его
-                std::string payload(static_cast<const char*>(msg->payload()), msg->len());
-                std::cout << "Получено сообщение: " << payload << std::endl;
-                
-                // Пример: сообщение содержит id товара и новый рейтинг, разделенные пробелом
-                std::istringstream iss(payload);
-                // Message type: key: <any> value: <event_id> <rating>
-                int event_id;
-                int rating;
-                if (iss >> event_id >> rating) {
-                    std::cout << "event_id:  " << event_id << std::endl;
-                    std::cout << "rating: " << rating <<  std::endl;
-                    try {
-                        // Устанавливаем соединение с PostgreSQL
-                        pqxx::connection C(pg_conn_str);
-                        pqxx::work W(C);
-
-                        // 1. Вставляем новую оценку в таблицу оценок
-                        std::string sqlInsert = "INSERT INTO ratings (event_id, rating) VALUES (" 
-                                                + W.quote(event_id) + ", " + W.quote(rating) + ");";
-                        W.exec(sqlInsert);
-
-                        // 2. Получаем все оценки для данного мероприятия
-                        pqxx::result R = W.exec("SELECT rating FROM ratings WHERE event_id = " 
-                                                + W.quote(event_id) + ";");
-                        
-                        // Вычисляем среднее значение
-                        long double sum = 0.0;
-                        long int count = 0;
-                        for (const auto &row : R) {
-                            sum += row["rating"].as<int>();
-                            count++;
-                        }
-                        double avgRating = count > 0 ? sum / count : 0.0;
-
-                        // 3. Обновляем в таблице мероприятий средний рейтинг данного мероприятия
-                        std::string sqlUpdate = "UPDATE events SET average_rating = " + W.quote(avgRating) +
-                                                " WHERE id = " + W.quote(event_id) + ";";
-                        W.exec(sqlUpdate);
-
-                        W.commit();
-                        std::cout << "Для мероприятия " << event_id << " добавлена оценка " << rating 
-                                << ", средний рейтинг обновлен до " << avgRating << std::endl;
-                    } catch (const std::exception &e) {
-                        std::cerr << "Ошибка работы с БД: " << e.what() << std::endl;
-                    }
-                } else {
-                    std::cerr << "Ошибка парсинга данных из сообщения" << std::endl;
-                }
-                break;
-            }
-            case RdKafka::ERR__TIMED_OUT:
-                // Таймаут ожидания сообщения – продолжаем цикл
-                break;
-            default:
-                std::cerr << "Ошибка потребления: " << msg->errstr() << std::endl;
-                break;
+        // Настройка Kafka
+        std::string errstr;
+        std::unique_ptr<RdKafka::Conf> conf(RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL));
+        
+        if (conf->set("bootstrap.servers", brokers, errstr) != RdKafka::Conf::CONF_OK ||
+            conf->set("group.id", "rating_group", errstr) != RdKafka::Conf::CONF_OK) {
+            throw std::runtime_error("Ошибка конфигурации Kafka: " + errstr);
         }
-        delete msg;
+
+        // Создание consumer
+        std::unique_ptr<RdKafka::KafkaConsumer> consumer(
+            RdKafka::KafkaConsumer::create(conf.get(), errstr));
+        if (!consumer) {
+            throw std::runtime_error("Ошибка создания consumer: " + errstr);
+        }
+
+        // Подписка на топик
+        std::vector<std::string> topics = { topic };
+        RdKafka::ErrorCode err = consumer->subscribe(topics);
+        if (err != RdKafka::ERR_NO_ERROR) {
+            throw std::runtime_error("Ошибка подписки: " + std::string(RdKafka::err2str(err)));
+        }
+
+        MessageProcessor processor(pg_conn_str);
+        std::cout << "Начало обработки сообщений..." << std::endl;
+
+        // Основной цикл обработки
+        while (run) {
+            std::unique_ptr<RdKafka::Message> msg(
+                consumer->consume(config::KAFKA_TIMEOUT_MS));
+
+            switch (msg->err()) {
+                case RdKafka::ERR_NO_ERROR: {
+                    std::string payload(static_cast<const char*>(msg->payload()), msg->len());
+                    try {
+                        processor.processMessage(payload);
+                    } catch (const std::exception& e) {
+                        std::cerr << e.what() << std::endl;
+                    }
+                    break;
+                }
+                case RdKafka::ERR__TIMED_OUT:
+                    break;
+                default:
+                    std::cerr << "Ошибка Kafka: " << msg->errstr() << std::endl;
+                    break;
+            }
+        }
+
+        consumer->close();
+        RdKafka::wait_destroyed(5000);
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Критическая ошибка: " << e.what() << std::endl;
+        return 1;
     }
-    
-    // Закрываем консьюмер
-    consumer->close();
-    delete consumer;
-    RdKafka::wait_destroyed(5000);
+
     return 0;
 }
