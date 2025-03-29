@@ -12,8 +12,8 @@ on:
 
 jobs:
   build-and-push:
-    # Запускаем job только если это push или если PR был merged
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    # Запускаем job только если это push, ручной запуск или если PR был merged
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
