@@ -19,11 +19,11 @@ spec:
         image: ghcr.io/securitytrip/parser-service:latest
         resources:
           limits:
-            cpu: "0.2"
-            memory: "150Mi"
-          requests:
             cpu: "0.1"
             memory: "75Mi"
+          requests:
+            cpu: "0.01"
+            memory: "25Mi"
         env:
         - name: KAFKA_BROKER
           value: "kafka-1-service:29092"

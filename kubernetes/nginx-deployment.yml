@@ -18,10 +18,10 @@ spec:
         resources:
           limits:
             cpu: "0.2"
-            memory: "200Mi"
+            memory: "128Mi"
           requests:
             cpu: "0.1"
-            memory: "100Mi"
+            memory: "64Mi"
         ports:
         - containerPort: 80
         - containerPort: 443
