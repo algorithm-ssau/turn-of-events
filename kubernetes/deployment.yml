@@ -15,11 +15,9 @@ spec:
       labels:
         app: nginx
     spec:
-      imagePullSecrets:
-      - name: ghcr-secret
       containers:
       - name: nginx
-        image: ghcr.io/securitytrip/nginx:latest
+        image: nginx:latest
         resources:
           limits:
             cpu: "0.2"
@@ -244,15 +242,15 @@ spec:
       imagePullSecrets:
       - name: ghcr-secret
       containers:
-      - name: utils
+      - name: utils-service
         image: ghcr.io/securitytrip/utils-service:latest
         resources:
           limits:
-            cpu: "0.2"
-            memory: "150Mi"
-          requests:
             cpu: "0.1"
-            memory: "75Mi"
+            memory: "128Mi"
+          requests:
+            cpu: "0.05"
+            memory: "64Mi"
         ports:
         - containerPort: 8182
         env:
@@ -511,15 +509,17 @@ spec:
           value: "PLAINTEXT"
         - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
           value: "1"
+        - name: KAFKA_HEAP_OPTS
+          value: "-Xmx64m -Xms64m"  # ограничение кучи JVM
         ports:
         - containerPort: 29092
         resources:
           limits:
             cpu: "0.2"
-            memory: "256Mi"
+            memory: "128Mi"
           requests:
             cpu: "0.1"
-            memory: "128Mi"
+            memory: "64Mi"
       volumes:
       - name: kafka1-storage
         emptyDir: {}
@@ -568,15 +568,17 @@ spec:
           value: "PLAINTEXT"
         - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
           value: "1"
+        - name: KAFKA_HEAP_OPTS
+          value: "-Xmx64m -Xms64m"  # ограничение кучи JVM
         ports:
         - containerPort: 29093
         resources:
           limits:
             cpu: "0.2"
-            memory: "256Mi"
+            memory: "128Mi"
           requests:
             cpu: "0.1"
-            memory: "128Mi"
+            memory: "64Mi"
       volumes:
       - name: kafka2-storage
         emptyDir: {}
