@@ -13,3 +13,4 @@ nginx/ssl
 
 # Others
 build
+/.vs
