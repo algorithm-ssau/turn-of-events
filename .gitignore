@@ -6,6 +6,7 @@
 #IDE
 .vscode
 .idea
+/.vs
 
 #Nginx
 nginx/logs
@@ -13,4 +14,3 @@ nginx/ssl
 
 # Others
 build
-/.vs
