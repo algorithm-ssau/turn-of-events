@@ -29,16 +29,16 @@ spec:
         - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
           value: "1"
         - name: KAFKA_HEAP_OPTS
-          value: "-Xmx64m -Xms64m"
+          value: "-Xmx100m -Xms64m"
         ports:
         - containerPort: 29092
         resources:
           limits:
-            cpu: "0.2"
-            memory: "128Mi"
+            cpu: "0.5"
+            memory: "512Mi"
           requests:
-            cpu: "0.1"
-            memory: "64Mi"
+            cpu: "0.2"
+            memory: "256Mi"
         volumeMounts:
         - name: kafka1-storage
           mountPath: /var/lib/kafka/data
