@@ -8,7 +8,7 @@ import {User} from './User';
 function App() {
   return (
     <>
-    <Router>
+    {/* <Router> */}
       <Header />
       <div className="event-container">
         {/* <switch>
@@ -17,7 +17,7 @@ function App() {
         <UpcomingEvents title="Ближайшие мероприятия" count={3} />
         <Events title="Все мероприятия" count={9} />
       </div>
-    </Router>
+    {/* /</Router> */}
     </>
   )
 }
