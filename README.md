@@ -48,7 +48,6 @@
 - **Analytics Service:** Сбор и анализ статистических данных о работе сервиса.
 
 <picture>
-
  <img alt="APPLICATION ARCHITECTURE" src="https://github.com/algorithm-ssau/turn-of-events/blob/master/APP%20ARCHITECTURE.jpg">
 </picture>
 
@@ -85,7 +84,7 @@
 
 # Вклад в проект
 * Лысов Илья [SecurityTrip](https://github.com/SecurityTrip) - Team Lead, Backend 
-* Лебедев Евгений [F4NTOM41K](https://github.com/F4NTOM41K) - 
+* Лебедев Евгений [F4NTOM41K](https://github.com/F4NTOM41K) - Frontend
 * Михальчук Данила [ded-mikhalych](https://github.com/ded-mikhalych) - Backend
 * Паршин Никита [Withotic](https://github.com/Withotic) - 
 * Дагаев Данила [Repkol](https://github.com/Repkol) - 
