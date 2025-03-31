@@ -243,6 +243,22 @@ services:
       - kafka-1
       - kafka-2
       - postgres
+  
+  review-feedback-service:
+    build:
+      context: .
+      dockerfile: review-feedback-service/Dockerfile
+    ports:
+    - "5632:5632"
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+    environment:
+      - KAFKA_BROKER=kafka-1:29092
+      - KAFKA_TOPIC=product_rating_update
+      - PG_CONN_STR=dbname=your_db user=admin password=admin123 host=postgres
+      - MONGO_URI=mongodb://admin:admin123@mongodb:27017
 
 networks:
   app-network:

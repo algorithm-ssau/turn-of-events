@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-feedback-service
+  labels:
+    app: review-feedback-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-feedback-service
+  template:
+    metadata:
+      labels:
+        app: review-feedback-service
+    spec:
+      containers:
+      - name: review-feedback-service
+        image: ghcr.io/securitytripreview-feedback-service:latest
+        ports:
+        - containerPort: 5632
+        resources:
+          limits:
+            cpu: "0.3"
+            memory: "256Mi"
+          requests:
+            cpu: "0.2"
+            memory: "64Mi"
