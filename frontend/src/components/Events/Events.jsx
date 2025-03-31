@@ -11,7 +11,7 @@ const Events = ({ title, count }) => {
                 ))}
             </div>
         </section>
-    );
-};
+    )
+}
 
-export default Events;
+export default Events

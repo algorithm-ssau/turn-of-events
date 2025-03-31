@@ -1,20 +1,12 @@
 .event-card {
-    background-color: #8bc34a;
-    width: 280px;
-    height: 150px;
+    background-color: #87D2A7;
     border-radius: 10px;
-    transition: transform 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
 }
-
 .event-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-@media (max-width: 320px) {
-    .event-card {
-        width: 100%;
-    }
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
