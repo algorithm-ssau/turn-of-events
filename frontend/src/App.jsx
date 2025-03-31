@@ -14,7 +14,7 @@ function App() {
         {/* <switch>
           <Route path="/user" component={User} />
         </switch> */}
-        <Events title="Ближайшие мероприятия" count={3} />
+        <UpcomingEvents title="Ближайшие мероприятия" count={3} />
         <Events title="Все мероприятия" count={9} />
       </div>
     </Router>
