@@ -81,6 +81,8 @@
    git clone https://github.com/algorithm-ssau/turn-of-events
    cd turn-of-events
 
+### Доступ
+Сайт доступен по адресу http://194.87.208.217/
 
 # Вклад в проект
 * Лысов Илья [SecurityTrip](https://github.com/SecurityTrip) - Team Lead, Backend 
