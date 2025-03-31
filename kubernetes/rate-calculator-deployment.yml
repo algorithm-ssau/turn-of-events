@@ -17,6 +17,7 @@ spec:
       containers:
       - name: rate-calculator
         image: ghcr.io/securitytrip/rate-calculator:latest
+        imagePullPolicy: Always
         resources:
           limits:
             cpu: "0.1"

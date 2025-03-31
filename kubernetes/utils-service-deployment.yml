@@ -17,6 +17,7 @@ spec:
       containers:
       - name: utils-service
         image: ghcr.io/securitytrip/utils-service:latest
+        imagePullPolicy: Always
         resources:
           limits:
             cpu: "0.1"

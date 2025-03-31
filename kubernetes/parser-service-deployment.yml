@@ -17,6 +17,7 @@ spec:
       containers:
       - name: parser-service
         image: ghcr.io/securitytrip/parser-service:latest
+        imagePullPolicy: Always
         resources:
           limits:
             cpu: "0.1"
