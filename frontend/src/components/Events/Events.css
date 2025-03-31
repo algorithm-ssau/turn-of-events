@@ -1,0 +1,13 @@
+.events {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+    .events {
+        justify-content: center;
+    }
+}
