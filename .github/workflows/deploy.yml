@@ -43,7 +43,7 @@ jobs:
             echo "Updating deployment ${deployment_name} with image ${full_tag}"
             if kubectl get deployment "${deployment_name}" &>/dev/null; then
               kubectl set image deployment/"${deployment_name}" ${image_name}=${full_tag} --record
-              kubectl rollout restart deployment/"${deployment_name}" --timeout=300s
+              kubectl rollout restart deployment/"${deployment_name}"
             else
               echo "Warning: Deployment ${deployment_name} not found"
             fi
