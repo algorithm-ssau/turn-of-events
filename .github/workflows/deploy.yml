@@ -33,15 +33,16 @@ jobs:
 
       - name: Update Images in Deployments
         run: |
-          # Обновляем образы для каждого сервиса, находящегося в Dockerfile
+          echo "Updating images in deployments..."
+          # Ищем все Dockerfile в репозитории и обновляем соответствующие деплойменты
           for dir in $(find . -name 'Dockerfile' -exec dirname {} \; | sort | uniq); do
             image_name=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
             full_tag="ghcr.io/securitytrip/${image_name}:latest"
             deployment_name="${image_name}-deployment"
-            echo "Updating deployment for ${deployment_name} with image ${full_tag}"
-            if kubectl get deployment/${deployment_name} &>/dev/null; then
-              kubectl set image deployment/${deployment_name} ${image_name}=${full_tag} --record
-              kubectl rollout status deployment/${deployment_name} --timeout=300s
+            echo "Updating deployment ${deployment_name} with image ${full_tag}"
+            if kubectl get deployment "${deployment_name}" &>/dev/null; then
+              kubectl set image deployment/"${deployment_name}" ${image_name}=${full_tag} --record
+              kubectl rollout status deployment/"${deployment_name}" --timeout=300s
             else
               echo "Warning: Deployment ${deployment_name} not found"
             fi
@@ -53,7 +54,7 @@ jobs:
           kubectl get deployments
           deployments=("nginx" "frontend" "user-service" "parser-service" "utils-service" "rate-calculator")
           for dep in "${deployments[@]}"; do
-            echo "Checking status of ${dep}-deployment..."
+            echo "Checking rollout status of ${dep}-deployment..."
             if ! kubectl rollout status deployment/${dep}-deployment --timeout=300s; then
               echo "Error: Deployment ${dep}-deployment failed"
               exit 1
