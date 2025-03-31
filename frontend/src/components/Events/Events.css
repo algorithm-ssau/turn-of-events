@@ -1,13 +1,35 @@
 .events {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    margin-bottom: 40px;
+  display: flex;
+  flex-wrap: wrap; /* Разрешаем перенос карточек на новую строку */
+  gap: 20px; /* Расстояние между карточками */
+  justify-content: flex-start; /* Выровняем карточки по левому краю */
+  width: 100%; /* Контейнер занимает всю ширину */
+  box-sizing: border-box;
+}
+
+.events > * {
+  flex: 1 1 calc(33.33% - 14px); /* Карточки занимают 1/3 ширины с учётом отступов */
+  max-width: calc(33.33% - 14px); /* Ограничиваем максимальную ширину */
+  height: 200px !important; /* Устанавливаем высоту карточек с приоритетом */
+  box-sizing: border-box; /* Учитываем padding и border в ширине */
 }
 
 @media (max-width: 768px) {
-    .events {
-        justify-content: center;
-    }
+  .events {
+    justify-content: center;
+    gap: 15px;
+  }
+  .events > * {
+    flex: 1 1 calc(50% - 20px); /* На мобильных устройствах карточки занимают 50% */
+    max-width: calc(50% - 20px);
+    height: 250px !important; /* Высота карточек на мобильных устройствах */
+  }
+}
+
+@media (max-width: 480px) {
+  .events > * {
+    flex: 1 1 100%; /* На очень маленьких экранах карточки занимают 100% */
+    max-width: 100%;
+    height: 200px !important; /* Высота карточек на маленьких экранах */
+  }
 }
