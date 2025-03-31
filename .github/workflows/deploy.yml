@@ -5,6 +5,7 @@ on:
     workflows: ["Build and Push Docker Images to Personal ghcr.io"]
     types:
       - completed
+  workflow_dispatch: {}
 
 jobs:
   deploy:
