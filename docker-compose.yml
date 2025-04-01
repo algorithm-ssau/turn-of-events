@@ -91,6 +91,19 @@ services:
       timeout: 10s
       retries: 3
 
+  redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - app-network
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   pgadmin:
     image: dpage/pgadmin4:latest
     ports:
@@ -159,14 +172,31 @@ services:
 
   user_service:
     build:
-      context: ./user-service        # Обновлён путь сборки
+      context: ./user-service
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"                  # Обновлён порт с 8080 на 8000
+      - "3000:3000"
     networks:
       - app-network
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # App port
+      - PORT=8000
+      # Database
+      - DB_USER=admin
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=afisha_db
+      - DB_PASSWORD=admin123
+      # Redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      # JWT
+      - JWT_SECRET=SecretKey
 
 networks:
   app-network:
@@ -178,3 +208,4 @@ volumes:
   kafka_data:
   pgadmin_data:
   mongo_express_data:
+  redis_data:
