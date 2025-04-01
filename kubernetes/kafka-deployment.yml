@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kafka-1-deployment
+  name: kafka-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kafka-1
+      app: kafka
   template:
     metadata:
       labels:
-        app: kafka-1
+        app: kafka
     spec:
       containers:
-      - name: kafka-1
+      - name: kafka
         image: confluentinc/cp-kafka:latest
         env:
         - name: KAFKA_BROKER_ID
@@ -21,7 +21,7 @@ spec:
         - name: KAFKA_ZOOKEEPER_CONNECT
           value: "zookeeper-service:2181"
         - name: KAFKA_ADVERTISED_LISTENERS
-          value: "PLAINTEXT://kafka-1-service:29092,PLAINTEXT_HOST://localhost:9092"
+          value: "PLAINTEXT://kafka-service:29092,PLAINTEXT_HOST://localhost:9092"
         - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
           value: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
         - name: KAFKA_INTER_BROKER_LISTENER_NAME
@@ -35,13 +35,13 @@ spec:
         resources:
           limits:
             cpu: "0.5"
-            memory: "1Gi"
+            memory: "640Mi"
           requests:
             cpu: "0.1"
-            memory: "512Mi"
+            memory: "256Mi"
         volumeMounts:
-        - name: kafka1-storage
+        - name: kafka-storage
           mountPath: /var/lib/kafka/data
       volumes:
-      - name: kafka1-storage
+      - name: kafka-storage
         emptyDir: {}

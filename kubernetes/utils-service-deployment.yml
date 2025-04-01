@@ -29,6 +29,6 @@ spec:
         - containerPort: 8182
         env:
         - name: KAFKA_BROKER
-          value: "kafka-1-service:29092"
+          value: "kafka-service:29092"
         - name: TOPIC
           value: "parsing"

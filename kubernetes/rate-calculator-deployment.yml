@@ -27,7 +27,7 @@ spec:
             memory: "75Mi"
         env:
         - name: KAFKA_BROKERS
-          value: "kafka-1-service:29092,kafka-2-service:29093"
+          value: "kafka-service:29092"
         - name: KAFKA_TOPIC
           value: "product_rating_update"
         - name: PG_CONN_STR
