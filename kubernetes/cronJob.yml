@@ -18,5 +18,5 @@ spec:
                 - -c
               args:
                 - |
-                  echo 'startOpera' | kafka-console-producer --broker-list kafkaservice:29092 --topic parsing
+                  echo 'startOpera' | kafka-console-producer --broker-list kafka-service:29092 --topic parsing
           restartPolicy: OnFailure
