@@ -42,3 +42,12 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: password
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: secret
