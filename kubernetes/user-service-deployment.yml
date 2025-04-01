@@ -28,16 +28,16 @@ spec:
         ports:
         - containerPort: 8000
         env:
-        - name: POSTGRES_HOST
+        - name: DB_HOST
           value: "postgres-service"
-        - name: POSTGRES_DB
+        - name: DB_DATABASE
           value: "afisha_db"
-        - name: POSTGRES_USER
+        - name: DB_USER
           valueFrom:
             secretKeyRef:
               name: postgres-secret
               key: username
-        - name: POSTGRES_PASSWORD
+        - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: postgres-secret

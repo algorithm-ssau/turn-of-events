@@ -224,10 +224,6 @@ services:
       - REDIS_PORT=6379
       # JWT
       - JWT_SECRET=SecretKey
-    networks:
-      - app-network
-    depends_on:
-      - postgres
 
   # Новый сервис для Go-парсера
   parser:
