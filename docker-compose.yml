@@ -68,7 +68,7 @@ services:
     networks:
       - app-network
 
-  kafka:
+  kafka-1:
     image: confluentinc/cp-kafka:latest
     depends_on:
       - zookeeper
@@ -77,19 +77,45 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
     volumes:
-      - kafka_data:/var/lib/kafka/data
+      - kafka_data_1:/var/lib/kafka/data
     networks:
       - app-network
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092"]
-      interval: 30s
+      interval: 20s
       timeout: 10s
-      retries: 3
+      retries: 5
+
+  kafka-2:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+      - kafka-1
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29093,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+    volumes:
+      - kafka_data_2:/var/lib/kafka/data
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
 
   redis:
     image: redis:alpine
@@ -124,12 +150,13 @@ services:
       - "8082:8080"
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka-1:29092,kafka-2:29093
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
     networks:
       - app-network
     depends_on:
-      - kafka
+      - kafka-1
+      - kafka-2
       - zookeeper
 
   mongo-ui:
@@ -155,8 +182,8 @@ services:
       - "5173:5173"
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=http://localhost/api  # Изменено с REACT_APP_API_URL на VITE_API_URL
-      - HOST=0.0.0.0  # Добавлено для доступа извне контейнера
+      - VITE_API_URL=http://localhost/api
+      - HOST=0.0.0.0
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -165,7 +192,7 @@ services:
     depends_on:
       - nginx
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:5173"]  # Исправлен порт
+      test: ["CMD", "wget", "--spider", "http://localhost:5173"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -197,6 +224,60 @@ services:
       - REDIS_PORT=6379
       # JWT
       - JWT_SECRET=SecretKey
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+
+  # Новый сервис для Go-парсера
+  parser:
+    build:
+      context: ./parser-service
+      dockerfile: Dockerfile
+    environment:
+      - KAFKA_BROKER=kafka-1:29092
+      - MONGO_URI=mongodb://admin:admin123@mongodb:27017
+      - GROUP_ID=1
+      - TOPIC=parsing
+    depends_on:
+      - mongodb
+      - kafka-1
+      - kafka-2
+      - zookeeper
+    networks:
+      - app-network
+
+  admin_service:
+    build:
+      context: ./utils-service
+      dockerfile: Dockerfile
+    ports:
+      - "8182:8182"
+    environment:
+      - KAFKA_BROKER=kafka-1:29092
+      - GROUP_ID=1
+      - TOPIC=parsing
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+
+  rate-calculator:
+    build:
+      context: ./rate-calculator
+      dockerfile: Dockerfile
+    environment:
+      # TODO make topic in Kafka and change DB name
+      - KAFKA_BROKERS=kafka-1:29092,kafka-2:29093
+      - KAFKA_TOPIC=product_rating_update
+      - PG_CONN_STR=dbname=your_db user=admin password=admin123 host=postgres
+    networks:
+      - app-network
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - postgres
+
 
 networks:
   app-network:
@@ -205,7 +286,8 @@ networks:
 volumes:
   postgres_data:
   mongodb_data:
-  kafka_data:
+  kafka_data_1:
+  kafka_data_2:
   pgadmin_data:
   mongo_express_data:
   redis_data:

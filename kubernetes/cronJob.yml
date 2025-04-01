@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kafka-message-sender
+spec:
+  # Выполнение задачи каждый день в полночь
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: kafka-producer
+              image: confluentinc/cp-kafka:latest
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+              args:
+                - |
+                  echo 'startOpera' | kafka-console-producer --broker-list kafka-service:29092 --topic parsing
+          restartPolicy: OnFailure
