@@ -7,9 +7,9 @@ import * as redisStore from 'cache-manager-redis-store';
   imports: [
     CacheModule.register({
       store: redisStore,
-      host: process.env.REDIS_HOST, // или 'redis', если имя контейнера
+      host: process.env.REDIS_HOST,
       port: 6379,
-      ttl: 30, // Время жизни кэша (секунды)
+      ttl: 30,
       // password: '...' // если Redis требует пароль
     }),
   ],

@@ -5,12 +5,9 @@ import { BullModule } from '@nestjs/bull';
 import { AppController } from 'src/controllers/app.controller';
 import { AppService } from 'src/services/app.service';
 import { DatabaseService } from 'src/services/database.service';
-import { CronService } from 'src/services/cron.service';
 import { User } from 'src/entities/user.entity';
 import { AuthModule } from './auth.module';
-import { NotificationsModule } from './notifications.module';
 import { RedisCacheModule } from './redis-cache.module';
-import { QueueModule } from './queue.module';
 
 @Module({
   imports: [
@@ -26,10 +23,8 @@ import { QueueModule } from './queue.module';
     }),
     TypeOrmModule.forFeature([User]),
     AuthModule,
-    NotificationsModule,
     RedisCacheModule,
     ScheduleModule.forRoot(),
-    QueueModule,
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST || 'localhost',
@@ -38,6 +33,6 @@ import { QueueModule } from './queue.module';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, DatabaseService, CronService],
+  providers: [AppService, DatabaseService],
 })
 export class AppModule {}
