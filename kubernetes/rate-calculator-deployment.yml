@@ -19,12 +19,12 @@ spec:
         image: ghcr.io/securitytrip/rate-calculator:latest
         imagePullPolicy: Always
         resources:
-          limits:
-            cpu: "0.1"
-            memory: "150Mi"
           requests:
-            cpu: "0.05"
+            cpu: "40m"      # снижено с 50m
             memory: "75Mi"
+          limits:
+            cpu: "80m"      # снижено с 100m
+            memory: "150Mi"
         env:
         - name: KAFKA_BROKERS
           value: "kafka-service:29092"

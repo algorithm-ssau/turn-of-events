@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:7.10.2  # замените на нужную версию
+        env:
+        - name: ELASTICSEARCH_URL
+          value: "http://elasticsearch-service:9200"  # имя сервиса Elasticsearch
+        ports:
+        - containerPort: 5601
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"    # снижено с 250m
+          limits:
+            memory: "512Mi"
+            cpu: "400m"    # снижено с 500m
