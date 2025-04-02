@@ -22,10 +22,10 @@ spec:
         resources:
           requests:
             memory: "64Mi"
-            cpu: "200m"    # снижено с 250m
+            cpu: "0.2"
           limits:
             memory: "128Mi"
-            cpu: "400m"    # снижено с 500m
+            cpu: "0.3"
         livenessProbe:
           tcpSocket:
             port: 6379

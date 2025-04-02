@@ -20,11 +20,11 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "40m"      # снижено с 50m
+            cpu: "40m"
             memory: "75Mi"
           limits:
-            cpu: "80m"      # снижено с 100m
-            memory: "150Mi"
+            cpu: "70m"
+            memory: "100Mi"
         env:
         - name: KAFKA_BROKERS
           value: "kafka-service:29092"
