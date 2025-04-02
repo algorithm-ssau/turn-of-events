@@ -21,23 +21,23 @@ spec:
         resources:
           limits:
             cpu: "0.2"
-            memory: "200Mi"
+            memory: "150Mi"
           requests:
             cpu: "0.1"
             memory: "100Mi"
         ports:
         - containerPort: 8000
         env:
-        - name: POSTGRES_HOST
+        - name: DB_HOST
           value: "postgres-service"
-        - name: POSTGRES_DB
-          value: "afisha_db"
-        - name: POSTGRES_USER
+        - name: DB_DATABASE
+          value: "usersDB"
+        - name: DB_USER
           valueFrom:
             secretKeyRef:
               name: postgres-secret
               key: username
-        - name: POSTGRES_PASSWORD
+        - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: postgres-secret
