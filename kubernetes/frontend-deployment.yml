@@ -19,12 +19,12 @@ spec:
         image: ghcr.io/securitytrip/frontend:latest
         imagePullPolicy: Always
         resources:
-          limits:
-            cpu: "0.2"
-            memory: "200Mi"
           requests:
-            cpu: "0.1"
+            memory: "50Mi"
+            cpu: "50m"
+          limits:
             memory: "100Mi"
+            cpu: "100m"
         ports:
         - containerPort: 5173
         env:

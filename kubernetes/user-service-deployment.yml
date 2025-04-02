@@ -19,12 +19,12 @@ spec:
         image: ghcr.io/securitytrip/user-service:latest
         imagePullPolicy: Always
         resources:
-          limits:
-            cpu: "0.2"
-            memory: "150Mi"
           requests:
-            cpu: "0.1"
-            memory: "100Mi"
+            memory: "50Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
         ports:
         - containerPort: 8000
         env:
@@ -42,12 +42,3 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: password
-        - name: REDIS_HOST
-          value: "redis-service"
-        - name: REDIS_PORT
-          value: "6379"
-        - name: JWT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: jwt-secret
-              key: secret

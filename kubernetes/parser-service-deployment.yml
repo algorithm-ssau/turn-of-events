@@ -19,12 +19,12 @@ spec:
         image: ghcr.io/securitytrip/parser-service:latest
         imagePullPolicy: Always
         resources:
-          limits:
-            cpu: "0.1"
-            memory: "75Mi"
           requests:
-            cpu: "0.01"
-            memory: "25Mi"
+            memory: "16Mi"
+            cpu: "10m"
+          limits:
+            memory: "32Mi"
+            cpu: "30m"
         env:
         - name: KAFKA_BROKER
           value: "kafka-service:29092"
