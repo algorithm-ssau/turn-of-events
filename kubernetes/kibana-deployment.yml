@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:7.10.2  # замените на нужную версию
+        image: docker.elastic.co/kibana/kibana:8.17
         env:
         - name: ELASTICSEARCH_URL
           value: "http://elasticsearch-service:9200"  # имя сервиса Elasticsearch
