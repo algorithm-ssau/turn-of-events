@@ -29,7 +29,10 @@ spec:
         - containerPort: 8000
         env:
         - name: DB_HOST
-          value: "postgres-service"
+          valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: host
         - name: DB_DATABASE
           value: "usersDB"
         - name: DB_USER
