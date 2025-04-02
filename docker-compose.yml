@@ -225,7 +225,6 @@ services:
       # JWT
       - JWT_SECRET=SecretKey
 
-
   # Новый сервис для Go-парсера
   parser:
     build:
