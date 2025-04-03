@@ -25,6 +25,20 @@ data:
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
+        # Organizer Frontend
+        location /organizer {
+            rewrite ^/organizer/(.*)$ /$1 break;
+            proxy_pass http://organizer-frontend-service:5174;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
         # User Service
         location /api/user {
             rewrite ^/api/user/(.*)$ /$1 break;
