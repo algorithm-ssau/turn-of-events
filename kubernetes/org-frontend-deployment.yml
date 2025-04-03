@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: org-frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: org-frontend
+  template:
+    metadata:
+      labels:
+        app: org-frontend
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: org-frontend
+        image: ghcr.io/securitytrip/org-frontend:latest
+        resources:
+          limits:
+            cpu: "0.2"
+            memory: "200Mi"
+          requests:
+            cpu: "0.1"
+            memory: "100Mi"
+        ports:
+        - containerPort: 5173
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: VITE_API_URL
+          value: "http://nginx-service/api"
