@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: org-frontend-deployment
+  name: organizer-frontend-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: org-frontend
+      app: organizer-frontend
   template:
     metadata:
       labels:
-        app: org-frontend
+        app: organizer-frontend
     spec:
       imagePullSecrets:
       - name: ghcr-secret
       containers:
-      - name: org-frontend
-        image: ghcr.io/securitytrip/org-frontend:latest
+      - name: organizer-frontend
+        image: ghcr.io/securitytrip/organizer-frontend:latest
         resources:
           limits:
             cpu: "0.2"
