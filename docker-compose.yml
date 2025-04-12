@@ -41,23 +41,6 @@ services:
       timeout: 5s
       retries: 5
 
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin123
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - app-network
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
@@ -130,20 +113,6 @@ services:
       timeout: 5s
       retries: 5
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    ports:
-      - "5050:80"
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=admin123
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    networks:
-      - app-network
-    depends_on:
-      - postgres
-
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     ports:
@@ -158,21 +127,6 @@ services:
       - kafka-1
       - kafka-2
       - zookeeper
-
-  mongo-ui:
-    image: mongo-express:latest
-    ports:
-      - "8081:8081"
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=admin123
-      - ME_CONFIG_MONGODB_SERVER=mongodb
-      - ME_CONFIG_BASICAUTH_USERNAME=admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=admin123
-    networks:
-      - app-network
-    depends_on:
-      - mongodb
 
   frontend:
     build:
@@ -232,31 +186,16 @@ services:
       dockerfile: Dockerfile
     environment:
       - KAFKA_BROKER=kafka-1:29092
+      # Change to postgres
       - MONGO_URI=mongodb://admin:admin123@mongodb:27017
       - GROUP_ID=1
       - TOPIC=parsing
     depends_on:
-      - mongodb
       - kafka-1
       - kafka-2
       - zookeeper
     networks:
       - app-network
-
-  admin_service:
-    build:
-      context: ./utils-service
-      dockerfile: Dockerfile
-    ports:
-      - "8182:8182"
-    environment:
-      - KAFKA_BROKER=kafka-1:29092
-      - GROUP_ID=1
-      - TOPIC=parsing
-    networks:
-      - app-network
-    depends_on:
-      - postgres
 
   rate-calculator:
     build:
@@ -281,9 +220,6 @@ networks:
 
 volumes:
   postgres_data:
-  mongodb_data:
   kafka_data_1:
   kafka_data_2:
-  pgadmin_data:
-  mongo_express_data:
   redis_data:
