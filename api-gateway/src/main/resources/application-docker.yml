@@ -4,13 +4,6 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: user-service
-          uri: http://user_service:8000/
-          predicates:
-            - Path=/api/users/**
-          filters:
-            - RewritePath=/api/users/(?<segment>.*), /api/user/$\{segment}
-            
         - id: event-service
           uri: http://event-service:8080/
           predicates:
@@ -18,29 +11,29 @@ spring:
           filters:
             - StripPrefix=0
             
-        - id: review-service
-          uri: http://user_service:8000/
-          predicates:
-            - Path=/api/reviews/**
-          filters:
-            - RewritePath=/api/reviews/(?<segment>.*), /api/review/$\{segment}
+        # - id: review-service
+        #   uri: http://user_service-1:8000/
+        #   predicates:
+        #     - Path=/api/reviews/**
+        #   filters:
+        #     - RewritePath=/api/reviews/(?<segment>.*), /api/review/$\{segment}
             
-        # Авторизация через user-service
+        # Authorization through user-service
         - id: auth-service
-          uri: http://user_service:8000/
+          uri: http://user-service:8000/
           predicates:
             - Path=/api/auth/**
           filters:
             - RewritePath=/api/auth/(?<segment>.*), /auth/$\{segment}
 
   main:
-    web-application-type: reactive
+    web-application-type: REACTIVE
 
-# Настройки JWT
+# JWT Settings
 jwt:
   secret: ${JWT_SECRET:SecretKey}
 
-# Настройки springdoc OpenAPI
+# SpringDoc OpenAPI Settings
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -58,7 +51,7 @@ management:
         include: "*"
   endpoint:
     health:
-      show-details: always
+      show-details: ALWAYS
 
 logging:
   level:

@@ -12,14 +12,14 @@ public class RouteConfig {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-                // Добавляем дополнительный маршрут для публичных апи мероприятий (доступные без авторизации)
+                // Публичные API мероприятий (без авторизации)
                 .route("public-events", r -> r
                         .path("/api/public/events/**")
                         .and()
                         .method(HttpMethod.GET)
-                        .uri("http://event-service:8080")
+                        .uri("http://event-service:8080/")
                 )
-                // Добавляем маршрут для swagger-документации
+                // Swagger документация
                 .route("api-docs", r -> r
                         .path("/api-docs/**")
                         .uri("forward:/api-docs")
