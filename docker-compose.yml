@@ -14,7 +14,7 @@ services:
     networks:
       - app-network
     depends_on:
-      - user_service
+      - user-service
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 30s
@@ -174,12 +174,12 @@ services:
       timeout: 5s
       retries: 3
 
-  user_service:
+  user-service:
     build:
       context: ./user-service
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "8000:8000"
     networks:
       - app-network
     depends_on:
