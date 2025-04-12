@@ -31,14 +31,16 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private ObjectMapper objectMapper;
 
     private final List<String> openApiEndpoints = List.of(
-            "/auth/login",
-            "/auth/register",
-            "/auth/refresh",
-            "/auth/",
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/refresh",
+            "/api/auth/",
             "/swagger-ui",
             "/swagger-ui.html",
             "/api-docs",
-            "/actuator"
+            "/actuator",
+            "/webjars/swagger-ui/index.html",
+            "/api/events/public"  // Публичные события не требуют аутентификации
     );
 
     @Override
@@ -48,6 +50,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         // Пропускаем запросы к открытым эндпоинтам без проверки JWT
         if (isOpenEndpoint(path)) {
+            return chain.filter(exchange);
+        }
+
+        // Проверяем, требуется ли аутентификация для данного пути
+        if (!requiresAuthentication(path)) {
             return chain.filter(exchange);
         }
 
@@ -83,6 +90,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 .build();
 
         return chain.filter(exchange.mutate().request(modifiedRequest).build());
+    }
+
+    // Проверяем, требуется ли аутентификация для этого пути
+    private boolean requiresAuthentication(String path) {
+        // Все API запросы требуют аутентификации
+        return path.startsWith("/api/");
     }
 
     private boolean isOpenEndpoint(String path) {
