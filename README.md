@@ -48,7 +48,7 @@
 - **Analytics Service:** Сбор и анализ статистических данных о работе сервиса.
 
 <picture>
- <img alt="APPLICATION ARCHITECTURE" src="https://github.com/algorithm-ssau/turn-of-events/blob/master/APP%20ARCHITECTURE.jpg">
+ <img alt="APPLICATION ARCHITECTURE" src="https://github.com/algorithm-ssau/turn-of-events/blob/master/APP.jpg">
 </picture>
 
 
