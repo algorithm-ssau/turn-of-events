@@ -19,7 +19,7 @@ public class RouteConfig {
                         .method(HttpMethod.GET)
                         .uri("http://event-service:8080/")
                 )
-                // Swagger документация
+                // Swagger документация API
                 .route("api-docs", r -> r
                         .path("/api-docs/**")
                         .uri("forward:/api-docs")
