@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        image: ghcr.io/algorithm-ssau/api-gateway:latest
+        image: ghcr.io/securitytrip/api-gateway:latest
         ports:
         - containerPort: 8080
         env:
