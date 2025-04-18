@@ -83,6 +83,19 @@ services:
       timeout: 10s
       retries: 5
 
+  redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - app-network
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     ports:
@@ -127,9 +140,28 @@ services:
       context: ./user-service
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "3000:3000"
     networks:
       - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # App port
+      - PORT=8000
+      # Database
+      - DB_USER=admin
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=afisha_db
+      - DB_PASSWORD=admin123
+      # Redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      # JWT
+      - JWT_SECRET=SecretKey
 
   parser:
     build:
@@ -137,6 +169,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - KAFKA_BROKER=kafka-1:29092
+      # Change to postgres
       - MONGO_URI=mongodb://admin:admin123@mongodb:27017
       - GROUP_ID=1
       - TOPIC=parsing
@@ -161,6 +194,7 @@ services:
     depends_on:
       - kafka-1
       - kafka-2
+      - postgres
 
 networks:
   app-network:
@@ -169,3 +203,4 @@ networks:
 volumes:
   kafka_data_1:
   kafka_data_2:
+  redis_data:
