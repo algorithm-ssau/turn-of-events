@@ -48,23 +48,6 @@ services:
       - api-gateway
       - frontend
 
-  postgres:
-    image: postgres:latest
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=afisha_db
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin123
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -153,6 +136,7 @@ services:
       - kafka-2
       - zookeeper
 
+
   frontend:
     build:
       context: ./frontend
@@ -202,7 +186,6 @@ services:
       # JWT
       - JWT_SECRET=SecretKey
 
-  # Новый сервис для Go-парсера
   parser:
     build:
       context: ./parser-service
@@ -236,13 +219,11 @@ services:
       - kafka-2
       - postgres
 
-
 networks:
   app-network:
     driver: bridge
 
 volumes:
-  postgres_data:
   kafka_data_1:
   kafka_data_2:
   redis_data:
