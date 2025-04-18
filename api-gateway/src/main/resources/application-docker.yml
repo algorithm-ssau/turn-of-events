@@ -26,6 +26,13 @@ spring:
           filters:
             - RewritePath=/api/auth/(?<segment>.*), /auth/$\{segment}
 
+        # - id: user-service
+        #   uri: http://user-service:8000/  # укажите корректный адрес и порт вашего user-service
+        #   predicates:
+        #     - Path=/user-service/**
+        #   filters:
+        #     - RewritePath: ^/user-service/(?<segment>.*), /${segment}
+
   main:
     web-application-type: REACTIVE
 
@@ -38,6 +45,7 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     enabled: true
+    configUrl: /swagger-config.yaml
   api-docs:
     path: /api-docs
     enabled: true
