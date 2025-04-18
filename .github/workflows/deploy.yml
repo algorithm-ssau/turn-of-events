@@ -53,7 +53,7 @@ jobs:
         run: |
           echo "Verifying all deployments..."
           kubectl get deployments
-          deployments=("nginx" "frontend" "user-service" "parser-service" "api-gateway" "rate-calculator" "organizer-frontend-deployment")
+          deployments=("nginx" "frontend" "user-service" "parser-service" "api-gateway" "rate-calculator" "organizer-frontend")
           for dep in "${deployments[@]}"; do
             echo "Checking rollout status of ${dep}-deployment..."
             if ! kubectl rollout status deployment/${dep}-deployment --timeout=300s; then
