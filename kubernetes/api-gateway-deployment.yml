@@ -17,6 +17,7 @@ spec:
       containers:
       - name: api-gateway
         image: ghcr.io/securitytrip/api-gateway:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
