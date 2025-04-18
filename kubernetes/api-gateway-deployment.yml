@@ -41,4 +41,7 @@ spec:
             path: /actuator/health
             port: 8080
           initialDelaySeconds: 30
-          periodSeconds: 10 
+          periodSeconds: 10
+      # Добавьте секцию imagePullSecrets
+      imagePullSecrets:
+      - name: ghcr-secret
