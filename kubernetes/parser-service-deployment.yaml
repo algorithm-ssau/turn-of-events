@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: parser-service
+  name: parser-service-deployment
   labels:
     app: parser-service
 spec:
