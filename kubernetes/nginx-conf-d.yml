@@ -10,7 +10,7 @@ data:
     gzip_comp_level 6;
 
     server {
-        # Frontend
+        # Main Frontend
         location / {
             proxy_pass http://frontend-service:5173;
             proxy_http_version 1.1;
@@ -23,9 +23,10 @@ data:
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
-        # Frontend
+        # Organizer Frontend
         location /organizer/ {
-            proxy_pass http://organizer-frontend-service:5174;
+            # Важно: Добавляем trailing slash в proxy_pass
+            proxy_pass http://organizer-frontend-service:5174/;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection 'upgrade';
@@ -34,9 +35,12 @@ data:
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
+            
+            # Переписываем путь, удаляя префикс /organizer
+            rewrite ^/organizer/?(.*)$ /$1 break;
         }
 
-        # Единый API Gateway для всех API запросов
+        # API Gateway
         location /api/ {
             proxy_pass http://api-gateway:8080/api/;
             proxy_http_version 1.1;
