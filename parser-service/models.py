@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Text
 from database import Base
 
 
@@ -15,7 +15,12 @@ class EventDB(Base):
     price = Column(String)
     place = Column(String)
     image_url = Column(String, nullable=True)
+    genre = Column(String, nullable=True)
+    duration = Column(String, nullable=True)
+    director = Column(String, nullable=True)
+    link = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now)
+    description = Column(Text, nullable=True)
 
 
 # Pydantic модели для API
@@ -26,6 +31,11 @@ class EventBase(BaseModel):
     price: str = ""
     place: str
     image_url: str = ""
+    genre: str = ""
+    duration: str = ""
+    director: str = ""
+    link: str = ""
+    description: str = ""
 
 
 class EventCreate(EventBase):
