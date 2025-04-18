@@ -25,7 +25,7 @@ spec:
             cpu: "0.1"
             memory: "100Mi"
         ports:
-        - containerPort: 5174
+        - containerPort: 5173
         env:
         - name: NODE_ENV
           value: "production"

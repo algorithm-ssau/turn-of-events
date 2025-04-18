@@ -25,7 +25,7 @@ WORKDIR /app
 COPY --from=builder /app ./
 
 # Открываем порт
-EXPOSE 5174
+EXPOSE 5173
 
 # Запускаем приложение
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
