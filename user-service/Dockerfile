@@ -1,20 +1,23 @@
-# Use official Node.js runtime as base image
-FROM node:18-alpine
+# Используем официальный образ Node.js
+FROM node:22-alpine
 
-# Set working directory
+# Устанавливаем рабочую директорию в контейнере
 WORKDIR /app
 
-# Copy package files
+# Копируем package.json и package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+# Устанавливаем зависимости
+RUN npm install
 
-# Copy app source code
+# Копируем все файлы проекта в контейнер
 COPY . .
 
-# Expose port
-EXPOSE 8000
+# Собираем TypeScript в JavaScript
+RUN npm run build
 
-# Start application
-CMD ["npm", "start"]
+# Открываем порт (если NestJS слушает 3000)
+EXPOSE 3000
+
+# Запускаем приложение
+CMD ["npm", "run", "start:prod"]

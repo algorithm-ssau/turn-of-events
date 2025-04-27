@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: organizer-frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: organizer-frontend
+  template:
+    metadata:
+      labels:
+        app: organizer-frontend
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: organizer-frontend
+        image: ghcr.io/securitytrip/organizer-frontend:latest
+        resources:
+          limits:
+            cpu: "0.2"
+            memory: "200Mi"
+          requests:
+            cpu: "0.15"
+            memory: "200Mi"
+        ports:
+        - containerPort: 5173
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: VITE_API_URL
+          value: "http://nginx-service/api"

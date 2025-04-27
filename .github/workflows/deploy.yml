@@ -1,0 +1,63 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Images to Personal ghcr.io"]
+    types:
+      - completed
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.20.0'
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Apply Kubernetes manifests
+        run: |
+          echo "Applying all manifests from the kubernetes folder..."
+          kubectl apply -f kubernetes/ --recursive
+
+      - name: Update Images in Deployments
+        run: |
+          echo "Updating images in deployments..."
+          # Ищем все Dockerfile в репозитории и обновляем соответствующие деплойменты
+          for dir in $(find . -name 'Dockerfile' -exec dirname {} \; | sort | uniq); do
+            image_name=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
+            full_tag="ghcr.io/securitytrip/${image_name}:latest"
+            deployment_name="${image_name}-deployment"
+            echo "Updating deployment ${deployment_name} with image ${full_tag}"
+            if kubectl get deployment "${deployment_name}" &>/dev/null; then
+              kubectl set image deployment/"${deployment_name}" ${image_name}=${full_tag} --record
+              kubectl rollout restart deployment/"${deployment_name}"
+            else
+              echo "Warning: Deployment ${deployment_name} not found"
+            fi
+          done
+
+      - name: Verify Deployments
+        run: |
+          echo "Verifying all deployments..."
+          kubectl get deployments
+          deployments=("nginx" "frontend" "user-service" "parser-service" "api-gateway" "rate-calculator" "organizer-frontend")
+          for dep in "${deployments[@]}"; do
+            echo "Checking rollout status of ${dep}-deployment..."
+            if ! kubectl rollout status deployment/${dep}-deployment --timeout=300s; then
+              echo "Error: Deployment ${dep}-deployment failed"
+              exit 1
+            fi
+          done

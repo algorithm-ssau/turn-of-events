@@ -1,0 +1,77 @@
+.upcoming-events-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden; /* Скрываем горизонтальный скролл за пределами контейнера */
+}
+
+.upcoming-events {
+    display: flex;
+    gap: 20px; /* Расстояние между карточками */
+    overflow-x: auto; /* Прокрутка только внутри контейнера */
+    scroll-behavior: smooth; /* Плавная прокрутка */
+    scrollbar-width: none; /* Убираем стандартный скролл */
+    padding: 10px 0;
+    -ms-overflow-style: none; /* Убираем скролл для IE */
+}
+
+.upcoming-events::-webkit-scrollbar {
+    display: none; /* Убираем скролл для Chrome/Safari */
+}
+
+.event-card {
+    flex: 0 0 auto; /* Запрещаем карточкам растягиваться */
+    width: 900px; /* Фиксированная ширина карточек */
+    height: 400px; /* Фиксированная высота карточек */
+    box-sizing: border-box; /* Учитываем padding и border в ширине */
+}
+
+.scroll-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 1;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scroll-button:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.scroll-button.left {
+    left: 10px;
+}
+
+.scroll-button.right {
+    right: 10px;
+}
+
+.upcoming-events-section {
+  margin-bottom: 40px;
+}
+
+.upcoming-events-header {
+  text-align: left; /* Выровнять текст по левому краю */
+  margin-bottom: 20px;
+}
+
+.upcoming-events-header h2 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #333;
+}
+
+.upcoming-events-description {
+  font-size: 1rem;
+  color: #666;
+  margin-top: 5px;
+}
