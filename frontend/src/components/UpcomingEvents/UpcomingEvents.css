@@ -18,10 +18,12 @@
     display: none; /* Убираем скролл для Chrome/Safari */
 }
 
-.event-card {
+.upcoming-event-card {
     flex: 0 0 auto; /* Запрещаем карточкам растягиваться */
-    width: 900px; /* Фиксированная ширина карточек */
-    height: 400px; /* Фиксированная высота карточек */
+    width: calc(100% - 40px); /* Вычисляем ширину относительно контейнера */
+    max-width: 900px; /* Максимальная ширина карточек */
+    min-width: 280px; /* Минимальная ширина карточек */
+    height: 400px; /* Высота карточек */
     box-sizing: border-box; /* Учитываем padding и border в ширине */
 }
 
@@ -57,6 +59,7 @@
 
 .upcoming-events-section {
   margin-bottom: 40px;
+  width: 100%;
 }
 
 .upcoming-events-header {
@@ -74,4 +77,27 @@
   font-size: 1rem;
   color: #666;
   margin-top: 5px;
+}
+
+@media (max-width: 1200px) {
+  .upcoming-event-card {
+    width: calc(100% - 40px);
+    max-width: 700px;
+  }
+}
+
+@media (max-width: 768px) {
+  .upcoming-event-card {
+    height: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .upcoming-event-card {
+    height: 300px;
+  }
+  
+  .upcoming-events {
+    gap: 15px;
+  }
 }

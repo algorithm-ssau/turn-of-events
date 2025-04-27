@@ -1,7 +1,7 @@
 import './EventCard.css'
-const EventCard = () => {
+const EventCard = ({ customClass }) => {
     return (
-        <div className="event-card"></div>
+        <div className={`event-card ${customClass || ''}`}></div>
     );
 };
 
