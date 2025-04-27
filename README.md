@@ -48,7 +48,7 @@
 - **Analytics Service:** Сбор и анализ статистических данных о работе сервиса.
 
 <picture>
- <img alt="APPLICATION ARCHITECTURE" src="https://github.com/algorithm-ssau/turn-of-events/blob/master/APP%20ARCHITECTURE.jpg">
+ <img alt="APPLICATION ARCHITECTURE" src="https://github.com/algorithm-ssau/turn-of-events/blob/master/APP.jpg">
 </picture>
 
 
@@ -82,11 +82,11 @@
    cd turn-of-events
 
 ### Доступ
-Сайт доступен по адресу http://194.87.208.217/
+Сайт доступен по адресу [http://109.73.199.18/](http://109.73.199.18/)
 
 # Вклад в проект
 * Лысов Илья [SecurityTrip](https://github.com/SecurityTrip) - Team Lead, Backend 
 * Лебедев Евгений [F4NTOM41K](https://github.com/F4NTOM41K) - Frontend
 * Михальчук Данила [ded-mikhalych](https://github.com/ded-mikhalych) - Backend
-* Паршин Никита [Withotic](https://github.com/Withotic) - 
-* Дагаев Данила [Repkol](https://github.com/Repkol) - 
+* Паршин Никита [Withotic](https://github.com/Withotic) - Frontend
+* Дагаев Данила [Repkol](https://github.com/Repkol) - Frontend

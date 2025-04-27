@@ -16,12 +16,12 @@ spec:
       - name: nginx
         image: nginx:latest
         resources:
-          limits:
-            cpu: "0.2"
-            memory: "128Mi"
           requests:
-            cpu: "0.1"
-            memory: "64Mi"
+            memory: "50Mi"
+            cpu: "25m"
+          limits:
+            memory: "100Mi"
+            cpu: "50m"
         ports:
         - containerPort: 80
         - containerPort: 443

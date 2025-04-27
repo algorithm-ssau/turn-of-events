@@ -22,6 +22,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    depends_on:
+      - api_gateway
 
   postgres:
     image: postgres:latest
@@ -37,23 +39,6 @@ services:
       - app-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin123
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - app-network
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
       interval: 10s
       timeout: 5s
       retries: 5
@@ -85,12 +70,11 @@ services:
       - kafka_data_1:/var/lib/kafka/data
     networks:
       - app-network
-    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092"]
-      interval: 20s
+      interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 3
 
   kafka-2:
     image: confluentinc/cp-kafka:latest
@@ -110,39 +94,11 @@ services:
       - kafka_data_2:/var/lib/kafka/data
     networks:
       - app-network
-    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092"]
-      interval: 20s
+      interval: 30s
       timeout: 10s
-      retries: 5
-
-  redis:
-    image: redis:alpine
-    restart: always
-    networks:
-      - app-network
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    ports:
-      - "5050:80"
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=admin123
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    networks:
-      - app-network
-    depends_on:
-      - postgres
+      retries: 3
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -158,21 +114,6 @@ services:
       - kafka-1
       - kafka-2
       - zookeeper
-
-  mongo-ui:
-    image: mongo-express:latest
-    ports:
-      - "8081:8081"
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=admin123
-      - ME_CONFIG_MONGODB_SERVER=mongodb
-      - ME_CONFIG_BASICAUTH_USERNAME=admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=admin123
-    networks:
-      - app-network
-    depends_on:
-      - mongodb
 
   frontend:
     build:
@@ -190,42 +131,65 @@ services:
     networks:
       - app-network
     depends_on:
-      - nginx
+      - api_gateway
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:5173"]
       interval: 10s
       timeout: 5s
       retries: 3
 
+  api_gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JWT_SECRET=secure_secret_key_for_jwt_token_generation
+    networks:
+      - app-network
+    depends_on:
+      - user_service
+      - event_service
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   user_service:
     build:
       context: ./user-service
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "8000:8000"
     networks:
       - app-network
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      # App port
-      - PORT=8000
-      # Database
-      - DB_USER=admin
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_DATABASE=afisha_db
-      - DB_PASSWORD=admin123
-      # Redis
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      # JWT
-      - JWT_SECRET=SecretKey
+      - postgres
 
-  # Новый сервис для Go-парсера
+  event_service:
+    build:
+      context: ./event-service
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/afisha_db
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin123
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   parser:
     build:
       context: ./parser-service
@@ -236,44 +200,11 @@ services:
       - GROUP_ID=1
       - TOPIC=parsing
     depends_on:
-      - mongodb
       - kafka-1
       - kafka-2
       - zookeeper
     networks:
       - app-network
-
-  admin_service:
-    build:
-      context: ./utils-service
-      dockerfile: Dockerfile
-    ports:
-      - "8182:8182"
-    environment:
-      - KAFKA_BROKER=kafka-1:29092
-      - GROUP_ID=1
-      - TOPIC=parsing
-    networks:
-      - app-network
-    depends_on:
-      - postgres
-
-  rate-calculator:
-    build:
-      context: ./rate-calculator
-      dockerfile: Dockerfile
-    environment:
-      # TODO make topic in Kafka and change DB name
-      - KAFKA_BROKERS=kafka-1:29092,kafka-2:29093
-      - KAFKA_TOPIC=product_rating_update
-      - PG_CONN_STR=dbname=your_db user=admin password=admin123 host=postgres
-    networks:
-      - app-network
-    depends_on:
-      - kafka-1
-      - kafka-2
-      - postgres
-
 
 networks:
   app-network:
@@ -285,5 +216,3 @@ volumes:
   kafka_data_1:
   kafka_data_2:
   pgadmin_data:
-  mongo_express_data:
-  redis_data:
