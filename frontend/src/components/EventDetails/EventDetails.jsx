@@ -12,6 +12,9 @@ const EventDetails = () => {
         // In a real app, this would be a fetch to an API
         // For now, we'll simulate loading event data
         setTimeout(() => {
+            const capacity = Math.floor(Math.random() * 100 + 50);
+            const registeredCount = Math.floor(Math.random() * 50);
+            
             setEvent({
                 id,
                 title: `Мероприятие ${id}`,
@@ -21,8 +24,9 @@ const EventDetails = () => {
                 description: 'Подробное описание мероприятия. Здесь может быть размещена любая информация о данном событии, включая программу, список участников и другие детали.',
                 organizer: 'Организатор мероприятия',
                 image: `https://source.unsplash.com/random/800x600?event&sig=${id}`,
-                capacity: Math.floor(Math.random() * 100 + 50),
-                registeredCount: Math.floor(Math.random() * 50),
+                capacity: capacity,
+                registeredCount: registeredCount,
+                availableSeats: capacity - registeredCount
             });
             setLoading(false);
         }, 500);
@@ -30,10 +34,6 @@ const EventDetails = () => {
 
     const handleGoBack = () => {
         navigate(-1);
-    };
-
-    const handleRegister = () => {
-        alert('Вы успешно зарегистрированы на мероприятие!');
     };
 
     if (loading) {
@@ -80,12 +80,9 @@ const EventDetails = () => {
                         <div className="info-item">
                             <strong>Зарегистрировано:</strong> {event.registeredCount} человек
                         </div>
-                    </div>
-                    
-                    <div className="event-registration">
-                        <button className="register-button" onClick={handleRegister}>
-                            Зарегистрироваться
-                        </button>
+                        <div className="info-item">
+                            <strong>Свободных мест:</strong> {event.availableSeats} мест
+                        </div>
                     </div>
                 </div>
             </div>

@@ -117,27 +117,6 @@
     margin-bottom: 0;
 }
 
-.event-registration {
-    margin-top: 20px;
-}
-
-.register-button {
-    background-color: #87D2A7;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-    width: 100%;
-}
-
-.register-button:hover {
-    background-color: #6dc090;
-    transform: translateY(-2px);
-}
-
 @media (max-width: 768px) {
     .event-details-container {
         padding: 15px;
