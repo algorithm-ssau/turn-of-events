@@ -15,7 +15,7 @@ spring:
             - RewritePath=/api/users/(?<segment>.*), /api/user/$\{segment}
             
         - id: event-service
-          uri: http://event-service:8080/
+          uri: http://event_service:8080/
           predicates:
             - Path=/api/events/**
           filters:
@@ -41,17 +41,6 @@ spring:
 # Настройки JWT
 jwt:
   secret: ${JWT_SECRET:SecretKey}
-
-# Настройки springdoc OpenAPI
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-    enabled: true
-  api-docs:
-    path: /api-docs
-    enabled: true
-  packages-to-scan: com.turnofevents.apigateway
-  paths-to-match: /api/**
 
 management:
   endpoints:

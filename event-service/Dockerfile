@@ -22,7 +22,7 @@ WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
 
 # Указываем порт, на котором будет работать приложение
-EXPOSE 8001
+EXPOSE 8080
 
 # Команда запуска приложения
 ENTRYPOINT ["java", "-jar", "app.jar"] 
