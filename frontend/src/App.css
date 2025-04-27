@@ -11,10 +11,10 @@ body {
 .event-container {
   padding: 15px 20px; /* Совпадает с отступами в header */
   margin-top: 80px; /* Отступ для компенсации фиксированного header */
-  width: 79%; /* Контейнер занимает всю ширину экрана */
+  width: 90%; /* Увеличиваем ширину контейнера */
   max-width: 1920px;
-  margin-left: 10%; /* Центрируем контейнер */
-  margin-right: 10%; /* Центрируем контейнер */
+  margin-left: auto; /* Автоматические отступы для центрирования */
+  margin-right: auto; /* Автоматические отступы для центрирования */
   box-sizing: border-box; /* Учитываем padding в ширине */
   overflow-x: hidden; /* Скрываем переполнение */
 }
@@ -25,8 +25,17 @@ h2 {
   text-align: center; /* Центрируем заголовок */
 }
 
+@media (max-width: 1200px) {
+  .event-container {
+    width: 95%; /* Увеличиваем ширину на средних экранах */
+  }
+}
+
 @media (max-width: 768px) {
   .event-container {
+    width: 100%; /* На мобильных устройствах используем всю ширину */
     padding: 10px; /* Уменьшаем отступы на мобильных устройствах */
+    margin-left: 0;
+    margin-right: 0;
   }
 }

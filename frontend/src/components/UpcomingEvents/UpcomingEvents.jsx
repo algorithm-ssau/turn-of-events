@@ -24,7 +24,7 @@ const UpcomingEvents = ({ title, count }) => {
 
   const scroll = (direction) => {
     const container = scrollContainerRef.current;
-    const cardWidth = container.querySelector('.event-card').offsetWidth + 20; // Ширина карточки + gap
+    const cardWidth = container.querySelector('.upcoming-event-card').offsetWidth + 20; // Ширина карточки + gap
     container.scrollBy({
       left: direction === 'right' ? cardWidth : -cardWidth,
       behavior: 'smooth',
@@ -51,7 +51,7 @@ const UpcomingEvents = ({ title, count }) => {
           {Array(count)
             .fill()
             .map((_, index) => (
-              <EventCard key={index} className="event-card" />
+              <EventCard key={index} className="upcoming-event-card" customClass="upcoming-event-card" />
             ))}
         </div>
         {showRightArrow && (
