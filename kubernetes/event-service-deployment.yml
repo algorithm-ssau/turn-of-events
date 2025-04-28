@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+
   name: event-service-deployment
   labels:
     app: event-service
@@ -23,6 +24,21 @@ spec:
         env:
         - name: SPRING_PROFILES_ACTIVE
           value: "k8s"
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
+        - name: POSTGRES_HOST
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: host
         resources:
           limits:
             memory: "512Mi"
