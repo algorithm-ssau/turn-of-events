@@ -1,23 +1,28 @@
-# Используем официальный образ Node.js
-FROM node:22-alpine
+FROM eclipse-temurin:21-jdk AS builder
 
-# Устанавливаем рабочую директорию в контейнере
 WORKDIR /app
 
-# Копируем package.json и package-lock.json
-COPY package*.json ./
+# Копируем файлы для сборки проекта
+COPY gradle/ gradle/
+COPY build.gradle settings.gradle gradlew ./
+COPY src/ src/
 
-# Устанавливаем зависимости
-RUN npm install
+# Предоставляем права на выполнение gradlew
+RUN chmod +x ./gradlew
 
-# Копируем все файлы проекта в контейнер
-COPY . .
+# Собираем проект
+RUN ./gradlew build -x test
 
-# Собираем TypeScript в JavaScript
-RUN npm run build
+# Создаем основной образ
+FROM eclipse-temurin:21-jre
 
-# Открываем порт (если NestJS слушает 3000)
-EXPOSE 3000
+WORKDIR /app
 
-# Запускаем приложение
-CMD ["npm", "run", "start:prod"]
+# Копируем собранный JAR из образа builder
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+# Указываем порт, на котором будет работать приложение
+EXPOSE 8080
+
+# Команда запуска приложения
+ENTRYPOINT ["java", "-jar", "app.jar"] 
