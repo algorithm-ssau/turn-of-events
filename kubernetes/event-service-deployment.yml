@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: event-service
+
+  name: event-service-deployment
   labels:
     app: event-service
 spec:
@@ -16,7 +17,8 @@ spec:
     spec:
       containers:
       - name: event-service
-        image: event-service:latest
+        image: ghcr.io/securitytrip/event-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
@@ -39,20 +41,23 @@ spec:
               key: host
         resources:
           limits:
-            cpu: "500m"
             memory: "512Mi"
+            cpu: "350m"
           requests:
-            cpu: "200m"
             memory: "256Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 15
         readinessProbe:
           httpGet:
             path: /actuator/health
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /actuator/health
-            port: 8080
-          initialDelaySeconds: 60
-          periodSeconds: 30
+      # Добавьте секцию imagePullSecrets
+      imagePullSecrets:
+      - name: ghcr-secret
