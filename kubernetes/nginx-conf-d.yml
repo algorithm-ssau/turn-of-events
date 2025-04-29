@@ -10,6 +10,13 @@ data:
     gzip_comp_level 6;
 
     server {
+        # Healthcheck
+        location /health {
+            access_log off;
+            return 200 'ok';
+            add_header Content-Type text/plain;
+        }
+        # ...остальные location...
         # Organizer Frontend
         location /organizer/ {
             # Важно: Добавляем trailing slash в proxy_pass
