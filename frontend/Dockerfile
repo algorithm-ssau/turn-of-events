@@ -1,5 +1,5 @@
 # Этап сборки
-FROM node:20-alpine AS builder
+FROM node:23-alpine3.20 AS builder
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Копируем собранные файлы в nginx
-COPY --from=builder /app/dist /usr/share/nginx/html/organizer
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
