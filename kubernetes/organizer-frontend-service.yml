@@ -5,6 +5,6 @@ metadata:
 spec:
   ports:
   - port: 5173
-    targetPort: 5173
+    targetPort: 80
   selector:
     app: organizer-frontend
