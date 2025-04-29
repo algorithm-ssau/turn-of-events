@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rate-calculator-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rate-calculator
+  template:
+    metadata:
+      labels:
+        app: rate-calculator
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: rate-calculator
+        image: ghcr.io/securitytrip/rate-calculator:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "30m"
+            memory: "10Mi"
+          limits:
+            cpu: "50m"
+            memory: "50Mi"
+        env:
+        - name: KAFKA_BROKERS
+          value: "kafka-service:29092"
+        - name: KAFKA_TOPIC
+          value: "product_rating_update"
+        - name: PG_CONN_STR
+          value: "dbname=afisha_db user=admin password=admin123 host=postgres-service"

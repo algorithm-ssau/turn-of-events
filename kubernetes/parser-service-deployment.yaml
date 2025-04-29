@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parser-service-deployment
+  labels:
+    app: parser-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: parser-service
+  template:
+    metadata:
+      labels:
+        app: parser-service
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: parser-service
+        image: ghcr.io/securitytrip/parser-service:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_HOST
+          valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: host
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: "afisha"
+        - name: KAFKA_BROKER
+          value: "kafka-service:29092"
+        - name: TOPIC
+          value: "parsing"
+        - name: GROUP_ID
+          value: "1"
+        # Секреты для базы данных из K8s Secret
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "20m"
+          limits:
+            memory: "400Mi"
+            cpu: "150m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20 
