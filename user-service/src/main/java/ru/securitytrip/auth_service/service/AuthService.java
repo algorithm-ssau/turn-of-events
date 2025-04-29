@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.securitytrip.auth_service.data.Role;
 import ru.securitytrip.auth_service.dto.LoginRequest;
 import ru.securitytrip.auth_service.dto.LoginResponse;
 import ru.securitytrip.auth_service.dto.RefreshTokenRequest;
@@ -37,11 +38,11 @@ public class AuthService {
     private JwtUtils jwtUtils;
 
     public LoginResponse authenticateUser(LoginRequest loginRequest) {
-        logger.debug("Попытка аутентификации пользователя: {}", loginRequest.getUsername());
+        logger.debug("Попытка аутентификации пользователя по email: {}", loginRequest.getEmail());
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
+                        loginRequest.getEmail(),
                         loginRequest.getPassword()
                 )
         );
@@ -51,50 +52,70 @@ public class AuthService {
         String refreshToken = jwtUtils.generateRefreshToken(authentication);
         logger.debug("JWT токен и Refresh токен успешно сгенерированы");
 
-        User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow();
+        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
         logger.debug("Пользователь найден в базе данных, userId: {}", user.getId());
 
-        return new LoginResponse(jwt, refreshToken, user.getUsername(), user.getId());
+        return new LoginResponse(jwt, refreshToken, user.getName(), user.getId());
     }
-    
-    public RefreshTokenResponse refreshToken(RefreshTokenRequest refreshRequest) {
-        logger.debug("Попытка обновления токена");
-        
-        String refreshToken = refreshRequest.getRefreshToken();
-        
-        if (!jwtUtils.validateJwtToken(refreshToken)) {
-            logger.warn("Невалидный refresh токен");
-            throw new RuntimeException("Refresh токен невалиден или истек");
+
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        try {
+            if (!jwtUtils.validateJwtToken(refreshTokenRequest.getRefreshToken())) {
+                logger.warn("Невалидный refresh token");
+                throw new RuntimeException("Refresh token невалиден");
+            }
+
+            // Получаем email из токена (subject в JWT)
+            String userIdentifier = jwtUtils.getUserNameFromJwtToken(refreshTokenRequest.getRefreshToken());
+            logger.debug("Email извлечен из refresh токена: {}", userIdentifier);
+
+            // Сначала ищем по email
+            User user = userRepository.findByEmail(userIdentifier)
+                    .orElseGet(() -> {
+                        // Если не нашли по email, пробуем по name
+                        return userRepository.findByName(userIdentifier)
+                                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                    });
+
+            // Создаем аутентификацию без пароля (токен уже проверен)
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    user.getEmail(), null, user.getAuthorities());
+
+            // Генерируем новые токены
+            String newAccessToken = jwtUtils.generateJwtToken(authentication);
+            String newRefreshToken = jwtUtils.generateRefreshToken(authentication);
+            logger.debug("Новый access token и refresh token сгенерированы для пользователя: {}", user.getEmail());
+
+            return new RefreshTokenResponse(newAccessToken, newRefreshToken);
+        } catch (Exception e) {
+            logger.error("Ошибка при обновлении токена: {}", e.getMessage());
+            throw new RuntimeException("Не удалось обновить токен", e);
         }
-        
-        String username = jwtUtils.getUserNameFromJwtToken(refreshToken);
-        logger.debug("Обновление токена для пользователя: {}", username);
-        
-        // Генерируем новый access токен
-        String newAccessToken = jwtUtils.generateTokenFromUsername(username, jwtUtils.getJwtExpirationMs());
-        
-        // Возвращаем новые токены
-        RefreshTokenResponse response = new RefreshTokenResponse();
-        response.setAccessToken(newAccessToken);
-        response.setRefreshToken(refreshToken);
-        return response;
     }
 
     public RegisterResponse registerUser(RegisterRequest registerRequest) {
-        logger.debug("Попытка регистрации пользователя: {}", registerRequest.getUsername());
+        logger.debug("Попытка регистрации пользователя: {}", registerRequest.getName());
 
-        if (userRepository.existsByUsername(registerRequest.getUsername())) {
-            logger.warn("Пользователь с именем {} уже существует", registerRequest.getUsername());
-            return new RegisterResponse("Пользователь с таким именем уже существует", false);
+        // Проверяем, существует ли пользователь с таким email
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            logger.warn("Пользователь с email {} уже существует", registerRequest.getEmail());
+            return new RegisterResponse("Пользователь с таким email уже существует", false);
         }
 
         User user = new User();
-        user.setUsername(registerRequest.getUsername());
+        user.setName(registerRequest.getName());
+        user.setEmail(registerRequest.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setRole(Role.USER);
+        
+        // Устанавливаем аватар, если он указан
+        if (registerRequest.getAvatarUrl() != null && !registerRequest.getAvatarUrl().isEmpty()) {
+            user.setAvatarURL(registerRequest.getAvatarUrl());
+        }
 
         logger.debug("Сохранение нового пользователя в базу данных");
         userRepository.save(user);
-        logger.info("Пользователь {} успешно зарегистрирован", registerRequest.getUsername());
+        logger.info("Пользователь {} успешно зарегистрирован", registerRequest.getName());
 
         return new RegisterResponse("Пользователь успешно зарегистрирован", true);
     }
