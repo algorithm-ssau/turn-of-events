@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Schema(description = "Запрос для аутентификации пользователя")
 public class LoginRequest {
-    @Schema(description = "Имя пользователя", example = "user123", required = true)
-    private String username;
+    @Schema(description = "Электронная почта", example = "user@example.com", required = true)
+    private String email;
     
     @Schema(description = "Пароль пользователя", example = "password123", required = true)
     private String password;
