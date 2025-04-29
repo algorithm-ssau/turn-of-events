@@ -1,55 +1,27 @@
+/* Импортируем общие стили для .section-title из UpcomingEvents.css */
+@import '../UpcomingEvents/UpcomingEvents.css';
+
 .events {
   display: flex;
-  flex-wrap: wrap; /* Разрешаем перенос карточек на новую строку */
-  gap: 20px; /* Расстояние между карточками */
-  justify-content: flex-start; /* Выравниваем карточки от начала контейнера */
-  width: 100%; /* Контейнер занимает всю ширину */
-  box-sizing: border-box;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  padding: 0 15px;
 }
 
-.events .event-card {
-  flex: 0 0 calc(33.33% - 14px); /* Фиксированная ширина без растягивания */
-  width: calc(33.33% - 14px); /* Точная ширина для карточки */
-  max-width: calc(33.33% - 14px); /* Ограничиваем максимальную ширину */
-  min-width: 250px; /* Минимальная ширина карточки */
-  height: 200px !important; /* Устанавливаем высоту карточек с приоритетом */
-  box-sizing: border-box; /* Учитываем padding и border в ширине */
-  margin-bottom: 15px; /* Отступ между строками */
+/* Стили для сетки карточек с использованием bootstrap grid */
+.events .row {
+  margin-left: -10px;
+  margin-right: -10px;
 }
 
-@media (max-width: 1200px) {
-  .events {
-    justify-content: space-between; /* Распределяем карточки равномерно */
-  }
-  .events .event-card {
-    flex: 0 0 calc(50% - 10px); /* Две карточки в ряду на средних экранах */
-    width: calc(50% - 10px);
-    max-width: calc(50% - 10px);
-  }
+.events .col {
+  padding: 10px;
 }
 
 @media (max-width: 768px) {
   .events {
-    justify-content: space-between;
-    gap: 15px;
-  }
-  .events .event-card {
-    flex: 0 0 calc(50% - 8px); /* Две карточки в ряду на мобильных */
-    width: calc(50% - 8px);
-    max-width: calc(50% - 8px);
-    height: 220px !important; /* Высота карточек на мобильных устройствах */
-  }
-}
-
-@media (max-width: 480px) {
-  .events {
-    justify-content: center;
-  }
-  .events .event-card {
-    flex: 0 0 100%; /* На очень маленьких экранах карточки занимают 100% */
-    width: 100%;
-    max-width: 100%;
-    min-width: auto; /* Убираем минимальную ширину на маленьких экранах */
-    height: 200px !important; /* Высота карточек на маленьких экранах */
+    gap: 10px;
   }
 }
