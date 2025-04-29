@@ -10,19 +10,6 @@ data:
     gzip_comp_level 6;
 
     server {
-        # Main Frontend
-        location / {
-            proxy_pass http://frontend-service:5173;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
-            proxy_set_header Host $host;
-            proxy_cache_bypass $http_upgrade;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-
         # Organizer Frontend
         location /organizer/ {
             # Важно: Добавляем trailing slash в proxy_pass
@@ -50,5 +37,18 @@ data:
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_read_timeout 120s;
             proxy_connect_timeout 120s;
+        }
+
+        # Main Frontend
+        location / {
+            proxy_pass http://frontend-service:5173;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
     }
