@@ -51,7 +51,8 @@ const EventBox = ({ imgg, text }) => {
             //border: "2px solid gray",
             borderRadius: "40px",
             margin: "40px",
-            color: "black"
+            color: "black",
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.5)'
         }}>
 
             <img alt="it sucks((" src={imgg} style={{
@@ -70,7 +71,11 @@ const EventBox = ({ imgg, text }) => {
 export default function App() {
 
     return (
-        <><header><img className="logoimg" src={logoimg}></img>Оборот           событий</header>
+        <><header><img className="logoimg" src={logoimg}></img>
+            <div style={{textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)'} }>
+                Оборот           событий
+            </div>
+        </header>
             
         <div style={{ display: "flex" }}>
             
