@@ -1,3 +1,6 @@
+[![Dependabot Updates](https://github.com/algorithm-ssau/turn-of-events/actions/workflows/dependabot/dependabot-updates/badge.svg?branch=master)](https://github.com/algorithm-ssau/turn-of-events/actions/workflows/dependabot/dependabot-updates)
+[![Build and Push Docker Images to Personal ghcr.io](https://github.com/algorithm-ssau/turn-of-events/actions/workflows/build-push.yml/badge.svg?branch=master)](https://github.com/algorithm-ssau/turn-of-events/actions/workflows/build-push.yml)
+[![Deploy to Kubernetes](https://github.com/algorithm-ssau/turn-of-events/actions/workflows/deploy.yml/badge.svg?branch=master)](https://github.com/algorithm-ssau/turn-of-events/actions/workflows/deploy.yml)
 # Оборот Событий
 
 **Оборот Событий** – это веб-сервис афиши городских мероприятий, построенный на основе микросервисной архитектуры. Проект предназначен для удобного поиска, размещения и управления городскими событиями, объединяя как пользователей, так и организаторов мероприятий.
@@ -45,8 +48,7 @@
 - **Analytics Service:** Сбор и анализ статистических данных о работе сервиса.
 
 <picture>
-
- <img alt="APPLICATION ARCHITECTURE" src="https://github.com/algorithm-ssau/turn-of-events/blob/master/APP%20ARCHITECTURE.jpg">
+ <img alt="APPLICATION ARCHITECTURE" src="https://github.com/algorithm-ssau/turn-of-events/blob/master/APP.jpg">
 </picture>
 
 
@@ -79,10 +81,12 @@
    git clone https://github.com/algorithm-ssau/turn-of-events
    cd turn-of-events
 
+### Доступ
+Сайт доступен по адресу [http://217.198.5.77/](http://217.198.5.77/)
 
 # Вклад в проект
 * Лысов Илья [SecurityTrip](https://github.com/SecurityTrip) - Team Lead, Backend 
-* Лебедев Евгений [F4NTOM41K](https://github.com/F4NTOM41K) - 
+* Лебедев Евгений [F4NTOM41K](https://github.com/F4NTOM41K) - Frontend
 * Михальчук Данила [ded-mikhalych](https://github.com/ded-mikhalych) - Backend
-* Паршин Никита [Withotic](https://github.com/Withotic) - 
-* Дагаев Данила [Repkol](https://github.com/Repkol) - 
+* Паршин Никита [Withotic](https://github.com/Withotic) - Frontend
+* Дагаев Данила [Repkol](https://github.com/Repkol) - Frontend

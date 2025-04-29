@@ -1,0 +1,68 @@
+name: Build and Push Docker Images to Personal ghcr.io
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [closed]
+    branches:
+      - master
+  workflow_dispatch: {}  # Добавляем ручной запуск
+
+jobs:
+  build-and-push:
+    # Запускаем job только если это push, ручной запуск или если PR был merged
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Нужно для сравнения с предыдущим коммитом
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: SecurityTrip
+          password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          # Получаем список измененных файлов
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          echo "Changed files: $CHANGED_FILES"
+          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker images
+        run: |
+          # Получаем список изменённых файлов из вывода предыдущего шага
+          CHANGED_FILES="${{ steps.changed-files.outputs.changed_files }}"
+
+          # Для каждой директории с Dockerfile
+          for dir in $(find . -name 'Dockerfile' -exec dirname {} \;); do
+            # Получаем относительный путь директории без ./
+            dir_without_prefix=${dir#./}
+            
+            # Получаем имя директории и приводим его к нижнему регистру
+            image_name=$(basename "$dir" | tr '[:upper:]' '[:lower:]')
+            username="securitytrip"
+            full_tag="ghcr.io/$username/$image_name:latest"
+
+            # Если ручной запуск, строим всегда, иначе проверяем наличие изменений
+            if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] || echo "$CHANGED_FILES" | grep -q "$dir_without_prefix" ; then
+              echo "Сборка образа из директории $dir"
+              echo "Сборка образа: $image_name"
+              echo "Полный тег: $full_tag"
+              
+              # Выполняем сборку и отправку образа
+              docker build -t "$full_tag" "$dir"
+              docker push "$full_tag"
+            else
+              echo "Пропуск сборки для $dir, изменений не обнаружено"
+            fi
+          done
