@@ -46,10 +46,11 @@ const EventBox = ({ imgg, text }) => {
         <div style={{
             width: "300px",
             height: "400px",
-            background: "#555555",
-            border: "2px solid gray",
+            background: "#87D2A7",
+            //border: "2px solid gray",
             borderRadius: "40px",
-            margin: "40px"
+            margin: "40px",
+            color: "black"
         }}>
 
             <img alt="it sucks((" src={imgg} style={{
@@ -68,12 +69,16 @@ const EventBox = ({ imgg, text }) => {
 export default function App() {
 
     return (
+        <><header>Оборот           событий</header>
+        <image className="logoimg" src></image>
         <div style={{ display: "flex" }}>
+            
             <EventBox imgg={imgcr} text="создать мероприятие" />
             <EventBox imgg={img} text="одно крутое мероприятие"  />
             <EventBox imgg={img2} text="второе крутое мероприятие" />
             <EventBox imgg={img3} text="еще одно мероприятие" />
-        </div>
-    )
+            </div>
+        </>
+    );
 }
 
