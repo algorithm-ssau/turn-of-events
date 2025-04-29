@@ -40,6 +40,7 @@ import imgcr from "./create.jpg";
 import img from "./img.jpg";
 import img2 from "./img2.jpg";
 import img3 from "./img3.jpg";
+import logoimg from "./logo.png";
 
 const EventBox = ({ imgg, text }) => {
     return (
@@ -69,8 +70,8 @@ const EventBox = ({ imgg, text }) => {
 export default function App() {
 
     return (
-        <><header>Оборот           событий</header>
-        <image className="logoimg" src></image>
+        <><header><img className="logoimg" src={logoimg}></img>Оборот           событий</header>
+            
         <div style={{ display: "flex" }}>
             
             <EventBox imgg={imgcr} text="создать мероприятие" />

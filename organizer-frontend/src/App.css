@@ -42,10 +42,16 @@
   color: #888;
 }
 header {
-    padding:6px 0px 6px 9px;
+    padding:10px 0px 10px 9px;
     background-color: #87D2A7;
     color: black;
     white-space: pre;
     font-weight:bold;
     font-size:20px;
+}
+
+.logoimg{
+    position:absolute;
+    width:50px;
+    margin:-10px 0px 0px 80px;
 }
