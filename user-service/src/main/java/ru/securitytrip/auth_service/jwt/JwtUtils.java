@@ -74,6 +74,18 @@ public class JwtUtils {
         return username;
     }
 
+    public String getUserEmailFromJwtToken(String refreshToken) {
+        String email = Jwts.parserBuilder()
+                .setSigningKey(key())
+                .build()
+                .parseClaimsJws(refreshToken)
+                .getBody()
+                .getSubject();
+
+        logger.trace("Извлечен EMail пользователя из токена: {}", email);
+        return email;
+    }
+
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(authToken);
@@ -95,4 +107,6 @@ public class JwtUtils {
     private Key key() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
+
+
 }
