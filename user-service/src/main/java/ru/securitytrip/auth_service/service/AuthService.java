@@ -7,6 +7,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.securitytrip.auth_service.data.Role;
@@ -37,6 +39,9 @@ public class AuthService {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     public LoginResponse authenticateUser(LoginRequest loginRequest) {
         logger.debug("Попытка аутентификации пользователя по email: {}", loginRequest.getEmail());
 
@@ -66,25 +71,20 @@ public class AuthService {
             }
 
             // Получаем email из токена (subject в JWT)
-            String userIdentifier = jwtUtils.getUserNameFromJwtToken(refreshTokenRequest.getRefreshToken());
-            logger.debug("Email извлечен из refresh токена: {}", userIdentifier);
+            String userEmail = jwtUtils.getUserEmailFromJwtToken(refreshTokenRequest.getRefreshToken());
+            logger.debug("Email извлечен из refresh токена: {}", userEmail);
 
-            // Сначала ищем по email
-            User user = userRepository.findByEmail(userIdentifier)
-                    .orElseGet(() -> {
-                        // Если не нашли по email, пробуем по name
-                        return userRepository.findByName(userIdentifier)
-                                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-                    });
+            // Получаем UserDetails через сервис Spring Security
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
             // Создаем аутентификацию без пароля (токен уже проверен)
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    user.getEmail(), null, user.getAuthorities());
+                    userDetails, null, userDetails.getAuthorities());
 
             // Генерируем новые токены
             String newAccessToken = jwtUtils.generateJwtToken(authentication);
             String newRefreshToken = jwtUtils.generateRefreshToken(authentication);
-            logger.debug("Новый access token и refresh token сгенерированы для пользователя: {}", user.getEmail());
+            logger.debug("Новый access token и refresh token сгенерированы для пользователя: {}", userEmail);
 
             return new RefreshTokenResponse(newAccessToken, newRefreshToken);
         } catch (Exception e) {
