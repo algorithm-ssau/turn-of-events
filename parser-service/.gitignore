@@ -1,0 +1,48 @@
+# Байткод Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Дистрибутивы
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+
+# Виртуальное окружение
+venv/
+env/
+ENV/
+
+# Файлы с секретами
+.env.secrets
+*.key
+*.pem
+secrets/
+
+# Локальные настройки IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Логи
+*.log
+
+# Временные файлы Alembic
+migrations/versions/*.py
+!migrations/versions/.keep
+
+# Другие временные файлы
+.coverage
+.cache/
+.pytest_cache/
+htmlcov/

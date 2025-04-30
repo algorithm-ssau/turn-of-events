@@ -20,12 +20,12 @@ spec:
         resources:
           limits:
             cpu: "0.2"
-            memory: "200Mi"
+            memory: "150Mi"
           requests:
-            cpu: "0.1"
+            cpu: "0.15"
             memory: "100Mi"
         ports:
-        - containerPort: 5173
+        - containerPort: 80
         env:
         - name: NODE_ENV
           value: "production"

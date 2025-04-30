@@ -1,0 +1,137 @@
+.event-details-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.event-details-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    font-size: 18px;
+    color: #666;
+}
+
+.back-button {
+    background-color: transparent;
+    border: none;
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 10px 0;
+    margin-bottom: 15px;
+    display: inline-block;
+    transition: color 0.2s ease;
+}
+
+.back-button:hover {
+    color: #87D2A7;
+}
+
+.event-details-header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.event-details-header h1 {
+    margin: 0 0 15px 0;
+    font-size: 2rem;
+    color: #333;
+}
+
+.event-meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    color: #666;
+    font-size: 1rem;
+}
+
+.event-date-time {
+    display: flex;
+    align-items: center;
+}
+
+.event-date {
+    margin-right: 15px;
+}
+
+.event-time::before {
+    content: "•";
+    margin-right: 8px;
+}
+
+.event-details-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.event-details-image {
+    flex: 1 1 300px;
+    max-width: 500px;
+}
+
+.event-details-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.event-details-info {
+    flex: 1 1 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.event-description h2 {
+    margin-top: 0;
+    font-size: 1.4rem;
+    color: #333;
+    text-align: left;
+}
+
+.event-description p {
+    line-height: 1.6;
+    color: #555;
+}
+
+.event-additional-info {
+    background-color: #f8f8f8;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.info-item {
+    margin-bottom: 10px;
+}
+
+.info-item:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .event-details-container {
+        padding: 15px;
+    }
+    
+    .event-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .event-details-content {
+        flex-direction: column;
+    }
+    
+    .event-details-image {
+        max-width: 100%;
+    }
+} 

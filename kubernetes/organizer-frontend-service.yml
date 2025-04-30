@@ -4,7 +4,7 @@ metadata:
   name: organizer-frontend-service
 spec:
   ports:
-  - port: 5174
-    targetPort: 5174
+  - port: 5173
+    targetPort: 80
   selector:
     app: organizer-frontend

@@ -1,52 +1,61 @@
-import './Header.css';
 import { useState, useRef, useEffect } from 'react';
+import { Navbar, Container, Form, Nav, NavDropdown } from 'react-bootstrap';
+import './Header.css';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef(null); // Реф для меню
-
-  const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
+  const menuRef = useRef(null);
 
   const handleClickOutside = (event) => {
-    // Если клик произошёл вне меню, закрываем его
     if (menuRef.current && !menuRef.current.contains(event.target)) {
       setIsMenuOpen(false);
     }
   };
 
   useEffect(() => {
-    // Добавляем обработчик кликов на документ
     document.addEventListener('mousedown', handleClickOutside);
-
-    // Убираем обработчик при размонтировании компонента
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   return (
-    <header className="header">
-      <div className="logo">Оборот событий</div>
-      <div className="search-bar">
-        <input type="text" placeholder="Поиск..." />
-      </div>
-      <div className="profile-container" ref={menuRef}>
-        <div className="profile-icon" onClick={toggleMenu}>
-          <img src="./public/icons8-гость-мужчина-48.png" alt="Профиль" className="profile-image" />
+    <Navbar expand="lg" className="header">
+      <Container fluid>
+        <Navbar.Brand className="logo">Оборот событий</Navbar.Brand>
+        <Form className="d-flex mx-auto search-bar">
+          <Form.Control
+            type="search"
+            placeholder="Поиск..."
+            className="me-2"
+            aria-label="Search"
+          />
+        </Form>
+        <div className="profile-container" ref={menuRef}>
+          <NavDropdown 
+            title={
+              <div className="profile-icon">
+                <img 
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXVzZXIiPjxwYXRoIGQ9Ik0xOSAyMXYtMmE0IDQgMCAwIDAtNC00SDlhNCA0IDAgMCAwLTQgNHYyIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0Ii8+PC9zdmc+" 
+                  alt="Профиль" 
+                  className="profile-image" 
+                />
+              </div>
+            }
+            id="basic-nav-dropdown"
+            show={isMenuOpen}
+            onToggle={(isOpen) => setIsMenuOpen(isOpen)}
+            align="end"
+            className="profile-dropdown"
+          >
+            <NavDropdown.Item>Профиль</NavDropdown.Item>
+            <NavDropdown.Item>Настройки</NavDropdown.Item>
+            <NavDropdown.Divider />
+            <NavDropdown.Item>Выход</NavDropdown.Item>
+          </NavDropdown>
         </div>
-        {isMenuOpen && (
-          <div className="profile-menu">
-            <ul>
-              <li>Профиль</li>
-              <li>Настройки</li>
-              <li>Выход</li>
-            </ul>
-          </div>
-        )}
-      </div>
-    </header>
+      </Container>
+    </Navbar>
   );
 };
 

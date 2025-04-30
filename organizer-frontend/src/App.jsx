@@ -40,16 +40,19 @@ import imgcr from "./create.jpg";
 import img from "./img.jpg";
 import img2 from "./img2.jpg";
 import img3 from "./img3.jpg";
+import logoimg from "./logo.png";
 
 const EventBox = ({ imgg, text }) => {
     return (
         <div style={{
             width: "300px",
             height: "400px",
-            background: "#555555",
-            border: "2px solid gray",
+            background: "#87D2A7",
+            //border: "2px solid gray",
             borderRadius: "40px",
-            margin: "40px"
+            margin: "40px",
+            color: "black",
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.5)'
         }}>
 
             <img alt="it sucks((" src={imgg} style={{
@@ -68,12 +71,20 @@ const EventBox = ({ imgg, text }) => {
 export default function App() {
 
     return (
+        <><header><img className="logoimg" src={logoimg}></img>
+            <div style={{textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)'} }>
+                Оборот           событий
+            </div>
+        </header>
+            
         <div style={{ display: "flex" }}>
+            
             <EventBox imgg={imgcr} text="создать мероприятие" />
             <EventBox imgg={img} text="одно крутое мероприятие"  />
             <EventBox imgg={img2} text="второе крутое мероприятие" />
             <EventBox imgg={img3} text="еще одно мероприятие" />
-        </div>
-    )
+            </div>
+        </>
+    );
 }
 

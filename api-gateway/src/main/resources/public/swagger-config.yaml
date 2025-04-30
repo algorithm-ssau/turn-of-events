@@ -1,8 +1,0 @@
-urls:
-  - name: "Сервис пользователей"
-    url: "/user-service/api/docs"
-  # - name: "Сервис мероприятий"
-  #   url: "/service-events/v3/api-docs"
-  # - name: "Сервис комментариев"
-  #   url: "/service-comments/v3/api-docs"
-
