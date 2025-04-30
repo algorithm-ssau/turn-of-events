@@ -40,8 +40,8 @@ spec:
               key: host
         resources:
           limits:
-            memory: "512Mi"
-            cpu: "350m"
+            memory: "1Gi"
+            cpu: "450m"
           requests:
             memory: "256Mi"
             cpu: "250m"
