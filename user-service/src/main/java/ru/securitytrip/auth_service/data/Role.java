@@ -1,7 +1,10 @@
 package ru.securitytrip.auth_service.data;
 
+/**
+ * Роли пользователей в системе
+ */
 public enum Role {
-    user,
-    admin,
-    moderator
+    USER,
+    ADMIN,
+    MODERATOR
 }
