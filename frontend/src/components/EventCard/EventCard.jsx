@@ -1,12 +1,13 @@
 import { Card } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import './EventCard.css';
 
 const EventCard = ({ title, date, location, description, customClass }) => {
-    const isUpcomingEvent = customClass?.includes('upcoming-event-card');
+    const navigate = useNavigate();
+    const eventId = title?.match(/\d+/)?.[0] || Math.floor(Math.random() * 100 + 1);
     
     const handleCardClick = () => {
-        // Здесь будет логика перехода на страницу мероприятия
-        console.log('Переход на страницу мероприятия');
+        navigate(`/event/${eventId}`);
     };
     
     return (

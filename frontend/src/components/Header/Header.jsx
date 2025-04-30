@@ -22,7 +22,7 @@ const Header = () => {
   return (
     <Navbar expand="lg" className="header">
       <Container fluid>
-        <Navbar.Brand className="logo">Оборот событий</Navbar.Brand>
+        <Navbar.Brand className="logo" href="/">Оборот событий</Navbar.Brand>
         <Form className="d-flex mx-auto search-bar">
           <Form.Control
             type="search"
