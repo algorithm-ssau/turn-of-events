@@ -40,7 +40,7 @@ public class RouteConfig {
                 .route("auth-service", r -> r
                         .path("/api/auth/**")
                         .filters(f -> f.rewritePath("/api/auth/(?<segment>.*)", "/auth/${segment}"))
-                        .uri("http://user_service:8000/")
+                        .uri("http://user_service:8080/")
                 )
                 .build();
     }
