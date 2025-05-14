@@ -8,11 +8,11 @@ const Events = ({ title, count }) => {
             <h2 className="section-title">{title}</h2>
             <div className="events">
                 <Row xs={1} md={2} lg={3} className="g-4">
-                    {Array(count).fill().map((_, index) => (
+                {Array(count).fill().map((_, index) => (
                         <Col key={index}>
                             <EventCard />
                         </Col>
-                    ))}
+                ))}
                 </Row>
             </div>
         </section>

@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Navbar, Container, Form, Nav, NavDropdown } from 'react-bootstrap';
+import { useAuth } from '../../context/AuthContext';
+import LoginButton from '../LoginButton/LoginButton';
 import './Header.css';
 
 const Header = () => {
+  const { isAuthenticated, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -31,29 +34,35 @@ const Header = () => {
             aria-label="Search"
           />
         </Form>
-        <div className="profile-container" ref={menuRef}>
-          <NavDropdown 
-            title={
-              <div className="profile-icon">
-                <img 
-                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXVzZXIiPjxwYXRoIGQ9Ik0xOSAyMXYtMmE0IDQgMCAwIDAtNC00SDlhNCA0IDAgMCAwLTQgNHYyIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0Ii8+PC9zdmc+" 
-                  alt="Профиль" 
-                  className="profile-image" 
-                />
-              </div>
-            }
-            id="basic-nav-dropdown"
-            show={isMenuOpen}
-            onToggle={(isOpen) => setIsMenuOpen(isOpen)}
-            align="end"
-            className="profile-dropdown"
-          >
-            <NavDropdown.Item>Профиль</NavDropdown.Item>
-            <NavDropdown.Item>Настройки</NavDropdown.Item>
-            <NavDropdown.Divider />
-            <NavDropdown.Item>Выход</NavDropdown.Item>
-          </NavDropdown>
+        
+        {/* Условный рендеринг: кнопка "Войти" или иконка профиля */}
+        {isAuthenticated ? (
+      <div className="profile-container" ref={menuRef}>
+            <NavDropdown 
+              title={
+                <div className="profile-icon">
+                  <img 
+                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXVzZXIiPjxwYXRoIGQ9Ik0xOSAyMXYtMmE0IDQgMCAwIDAtNC00SDlhNCA0IDAgMCAwLTQgNHYyIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0Ii8+PC9zdmc+" 
+                    alt="Профиль" 
+                    className="profile-image" 
+                  />
         </div>
+              }
+              id="basic-nav-dropdown"
+              show={isMenuOpen}
+              onToggle={(isOpen) => setIsMenuOpen(isOpen)}
+              align="end"
+              className="profile-dropdown"
+            >
+              <NavDropdown.Item>Профиль</NavDropdown.Item>
+              <NavDropdown.Item>Настройки</NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item onClick={logout}>Выход</NavDropdown.Item>
+            </NavDropdown>
+          </div>
+        ) : (
+          <LoginButton />
+        )}
       </Container>
     </Navbar>
   );
