@@ -6,14 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "Ответ на запрос обновления токена")
 public class RefreshTokenResponse {
-    
-    @Schema(description = "Access токен", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+    @Schema(description = "Новый JWT токен для авторизации", example = "eyJhbGciOiJIUzI1NiJ9...", required = true)
     private String accessToken;
     
-    @Schema(description = "Refresh токен", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+    @Schema(description = "Новый refresh токен", example = "eyJhbGciOiJIUzI1NiJ9...", required = true)
     private String refreshToken;
 } 

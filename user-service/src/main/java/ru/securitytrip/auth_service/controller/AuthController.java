@@ -32,7 +32,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @Operation(summary = "Вход в систему", description = "Аутентификация пользователя и получение JWT-токена")
+    @Operation(summary = "Вход в систему", description = "Аутентификация пользователя по email и получение JWT-токена")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешная аутентификация",
                     content = @Content(mediaType = "application/json",
@@ -42,13 +42,13 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        logger.info("Получен запрос на аутентификацию для пользователя: {}", loginRequest.getUsername());
+        logger.info("Получен запрос на аутентификацию по email: {}", loginRequest.getEmail());
         try {
             LoginResponse response = authService.authenticateUser(loginRequest);
-            logger.info("Успешная аутентификация пользователя: {}", loginRequest.getUsername());
+            logger.info("Успешная аутентификация пользователя с email: {}", loginRequest.getEmail());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            logger.error("Ошибка при аутентификации пользователя {}: {}", loginRequest.getUsername(), e.getMessage());
+            logger.error("Ошибка при аутентификации пользователя с email {}: {}", loginRequest.getEmail(), e.getMessage());
             return ResponseEntity.status(401).build();
         }
     }
@@ -74,26 +74,29 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "Регистрация нового пользователя", description = "Создание нового аккаунта пользователя")
+    @Operation(summary = "Регистрация нового пользователя", description = "Создание нового аккаунта пользователя с email")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешная регистрация",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = RegisterResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Ошибка валидации или пользователь уже существует",
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации или email уже зарегистрирован",
                     content = @Content)
     })
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest registerRequest) {
-        logger.info("Получен запрос на регистрацию пользователя: {}", registerRequest.getUsername());
+        logger.info("Получен запрос на регистрацию пользователя: {}, email: {}", 
+                registerRequest.getName(), registerRequest.getEmail());
+        
         RegisterResponse response = authService.registerUser(registerRequest);
 
         if (response.isSuccess()) {
-            logger.info("Пользователь успешно зарегистрирован: {}", registerRequest.getUsername());
+            logger.info("Пользователь успешно зарегистрирован: {}, email: {}", 
+                    registerRequest.getName(), registerRequest.getEmail());
             return ResponseEntity.ok(response);
         } else {
-            logger.warn("Не удалось зарегистрировать пользователя {}: {}",
-                    registerRequest.getUsername(), response.getMessage());
-            return ResponseEntity.status(400).build();
+            logger.warn("Не удалось зарегистрировать пользователя {}, email {}: {}",
+                    registerRequest.getName(), registerRequest.getEmail(), response.getMessage());
+            return ResponseEntity.status(400).body(response);
         }
     }
 }
