@@ -1,31 +1,20 @@
-# Базовый образ
-FROM node:20-alpine AS builder
+# Этап сборки
+FROM node:23-alpine3.20 AS builder
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем package.json и package-lock.json
 COPY package*.json ./
-
-# Устанавливаем зависимости
 RUN npm install
 
-# Копируем исходный код проекта
 COPY . .
-
-# Собираем проект
 RUN npm run build
 
-# Второй этап - создание минимального образа
-FROM node:20-alpine
+# Этап деплоя на nginx
+FROM nginx:alpine
 
-WORKDIR /app
+# Копируем собранные файлы в nginx
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Копируем файлы из builder-контейнера
-COPY --from=builder /app ./
+EXPOSE 80
 
-# Открываем порт
-EXPOSE 5173
-
-# Запускаем приложение
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["nginx", "-g", "daemon off;"]

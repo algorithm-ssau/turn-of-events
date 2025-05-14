@@ -35,7 +35,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                String username = jwtUtils.getUserNameFromJwtToken(jwt);
+                String username = jwtUtils.getUserEmailFromJwtToken(jwt);
                 logger.debug("JWT токен валиден для пользователя: {}", username);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
