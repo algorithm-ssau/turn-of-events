@@ -3,11 +3,11 @@ import { Navbar, Container, Form, Nav, NavDropdown } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 import LoginButton from '../LoginButton/LoginButton';
 import './Header.css';
-
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef(null);
+
+    const menuRef = useRef(null);
 
   const handleClickOutside = (event) => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -34,7 +34,6 @@ const Header = () => {
             aria-label="Search"
           />
         </Form>
-        
         {/* Условный рендеринг: кнопка "Войти" или иконка профиля */}
         {isAuthenticated ? (
       <div className="profile-container" ref={menuRef}>
