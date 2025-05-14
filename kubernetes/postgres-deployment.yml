@@ -30,9 +30,16 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: password
+        - name: POSTGRES_DB
+          value: usersDB
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
+        - name: initdb
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: postgres-storage
         emptyDir: {}
+      - name: initdb
+        configMap:
+          name: postgres-initdb-config
