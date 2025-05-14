@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Базовый URL API
-const API_URL = 'http://localhost:8000/api/auth/';
+const API_URL = '/api/auth/';
 
 // Настройка заголовков для токена авторизации
 const setAuthToken = (token) => {
