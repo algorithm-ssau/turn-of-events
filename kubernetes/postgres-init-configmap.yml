@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: postgres-initdb-config
 data:
-  init-multiple-dbs.sql: |
-    CREATE DATABASE usersDB;
-    CREATE DATABASE eventsDB;
+  init.sql: |
+    CREATE DATABASE "usersDB";
+    CREATE DATABASE "eventsDB";
