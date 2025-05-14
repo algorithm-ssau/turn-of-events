@@ -12,7 +12,7 @@ spring:
             - StripPrefix=0
             
         # - id: review-service
-        #   uri: http://user_service-1:8000/
+        #   uri: http://user_service:8000/
         #   predicates:
         #     - Path=/api/reviews/**
         #   filters:

@@ -31,12 +31,12 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=usersDB
+      - POSTGRES_DB=defaultdb
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin123
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-multiple-dbs.sql:/docker-entrypoint-initdb.d/init-multiple-dbs.sql
+      - ./initdb:/docker-entrypoint-initdb.d
     networks:
       - app-network
     healthcheck:
