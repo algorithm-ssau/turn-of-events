@@ -1,4 +1,4 @@
-﻿//import { useState } from 'react'
+//import { useState } from 'react'
 //import reactLogo from './assets/react.svg'
 //import viteLogo from '/vite.svg'
 //import './App.css'
@@ -41,6 +41,8 @@ import img from "./img.jpg";
 import img2 from "./img2.jpg";
 import img3 from "./img3.jpg";
 import logoimg from "./logo.png";
+import Cardd from "./compts/cardd.jsx";
+import { Col } from 'react-bootstrap';
 
 const EventBox = ({ imgg, text }) => {
     return (
@@ -54,7 +56,6 @@ const EventBox = ({ imgg, text }) => {
             color: "black",
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.5)'
         }}>
-
             <img alt="it sucks((" src={imgg} style={{
                 width: "300px",
                 height: "300px",
@@ -72,17 +73,27 @@ export default function App() {
 
     return (
         <><header><img className="logoimg" src={logoimg}></img>
-            <div style={{textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)'} }>
+            <div style={{textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',display:'inline-block'} }>
                 Оборот           событий
+            </div>
+            <div className="profile-icon">
+                <img
+                    src={'./icons8-гость-мужчина-48.png'}
+                    alt="Профиль"
+                    className="profile-image"
+                />
             </div>
         </header>
             
         <div style={{ display: "flex" }}>
-            
-            <EventBox imgg={imgcr} text="создать мероприятие" />
-            <EventBox imgg={img} text="одно крутое мероприятие"  />
-            <EventBox imgg={img2} text="второе крутое мероприятие" />
-            <EventBox imgg={img3} text="еще одно мероприятие" />
+                <Cardd />
+                <Cardd />
+                <Cardd />
+                <Cardd />
+            {/*<EventBox imgg={imgcr} text="создать мероприятие" />*/}
+            {/*<EventBox imgg={img} text="одно крутое мероприятие"  />*/}
+            {/*<EventBox imgg={img2} text="второе крутое мероприятие" />*/}
+            {/*<EventBox imgg={img3} text="еще одно мероприятие" />*/}
             </div>
         </>
     );
