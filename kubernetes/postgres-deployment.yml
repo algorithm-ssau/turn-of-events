@@ -38,7 +38,7 @@ spec:
               name: postgres-secret
               key: password
         - name: POSTGRES_DB
-          value: usersDB
+          value: defaultdb # Важно: не usersDB и не eventsDB!
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
