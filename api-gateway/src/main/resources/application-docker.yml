@@ -5,7 +5,7 @@ spring:
     gateway:
       routes:
         - id: event-service
-          uri: http://event-service:8080/
+          uri: http://event_service:8080/
           predicates:
             - Path=/api/events/**
           filters:
@@ -20,19 +20,11 @@ spring:
             
         # Authorization through user-service
         - id: auth-service
-          uri: http://user-service:8000/
+          uri: http://user_service:8000/
           predicates:
             - Path=/api/auth/**
           filters:
             - RewritePath=/api/auth/(?<segment>.*),/auth/${segment}
-
-        # - id: user-service
-        #   uri: http://user-service:8000/  # укажите корректный адрес и порт вашего user-service
-        #   predicates:
-        #     - Path=/user-service/**
-        #   filters:
-        #     - RewritePath: ^/user-service/(?<segment>.*), /${segment}
-
   main:
     web-application-type: REACTIVE
 
