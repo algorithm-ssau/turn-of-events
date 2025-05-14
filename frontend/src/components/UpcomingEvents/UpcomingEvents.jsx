@@ -1,67 +1,127 @@
-import './UpcomingEvents.css';
+import React, { useState, useEffect } from 'react';
 import EventCard from '../EventCard/EventCard';
-import { useRef, useState, useEffect } from 'react';
+import { Carousel } from 'react-bootstrap';
+import './UpcomingEvents.css';
 
-const UpcomingEvents = ({ title, count }) => {
-  const scrollContainerRef = useRef(null);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(false);
+const UpcomingEvents = ({ title = "Предстоящие события", count = 9 }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [events, setEvents] = useState([]);
+  const [visibleCards, setVisibleCards] = useState([]);
 
-  const handleScroll = () => {
-    const container = scrollContainerRef.current;
-    setShowLeftArrow(container.scrollLeft > 0);
-    setShowRightArrow(
-      container.scrollLeft < container.scrollWidth - container.clientWidth
-    );
+  // Создаем массив событий на основе переданного количества
+  useEffect(() => {
+    const generateEvents = () => {
+      return Array.from({ length: count }, (_, index) => ({
+        id: index + 1,
+        title: `Событие ${index + 1}`,
+        date: `${Math.floor(Math.random() * 30) + 1} марта 2023`,
+        location: `Место проведения ${index + 1}`,
+        description: `Описание события ${index + 1}. Здесь будет размещена полная информация о событии.`
+      }));
+    };
+    
+    setEvents(generateEvents());
+  }, [count]);
+
+  // Обновляем видимые карточки при изменении активного индекса или размеров экрана
+  useEffect(() => {
+    const updateVisibleCards = () => {
+      if (events.length === 0) return;
+      
+      const totalCards = events.length;
+      const leftIndex = (activeIndex - 1 + totalCards) % totalCards;
+      const centerIndex = activeIndex;
+      const rightIndex = (activeIndex + 1) % totalCards;
+      
+      let cards = [];
+      
+      // Определяем количество видимых карточек в зависимости от размера экрана
+      if (window.innerWidth <= 576) {
+        // Мобильные - 1 карточка
+        cards = [
+          { event: events[centerIndex], index: centerIndex, position: 'active' }
+        ];
+      } else if (window.innerWidth <= 768) {
+        // Планшеты - 2 карточки
+        cards = [
+          { event: events[centerIndex], index: centerIndex, position: 'active' },
+          { event: events[rightIndex], index: rightIndex, position: 'right' }
+        ];
+      } else {
+        // Десктоп - 3 карточки
+        cards = [
+          { event: events[leftIndex], index: leftIndex, position: 'left' },
+          { event: events[centerIndex], index: centerIndex, position: 'active' },
+          { event: events[rightIndex], index: rightIndex, position: 'right' }
+        ];
+      }
+      
+      setVisibleCards(cards);
+    };
+    
+    updateVisibleCards();
+    
+    // Добавляем слушатель изменения размера окна
+    window.addEventListener('resize', updateVisibleCards);
+    return () => {
+      window.removeEventListener('resize', updateVisibleCards);
+    };
+  }, [activeIndex, events]);
+
+  // Обработчик переключения на следующую карточку
+  const handleNext = () => {
+    setActiveIndex((prevIndex) => (prevIndex + 1) % events.length);
   };
 
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (container.scrollWidth > container.clientWidth) {
-      setShowRightArrow(true);
-    }
-  }, []);
+  // Обработчик переключения на предыдущую карточку
+  const handlePrev = () => {
+    setActiveIndex((prevIndex) => (prevIndex - 1 + events.length) % events.length);
+  };
 
-  const scroll = (direction) => {
-    const container = scrollContainerRef.current;
-    const cardWidth = container.querySelector('.event-card').offsetWidth + 20; // Ширина карточки + gap
-    container.scrollBy({
-      left: direction === 'right' ? cardWidth : -cardWidth,
-      behavior: 'smooth',
-    });
+  // Обработчик выбора индикатора
+  const handleIndicatorClick = (index) => {
+    setActiveIndex(index);
   };
 
   return (
     <section className="upcoming-events-section">
-      <h2>{title}</h2>
-      <div className="upcoming-events-container">
-        {showLeftArrow && (
-          <button
-            className="scroll-button left"
-            onClick={() => scroll('left')}
+      <h2 className="section-title">{title}</h2>
+      <div className="carousel-container">
+        <div className="single-row-carousel">
+          <div className="carousel-slide">
+            <div className="visible-cards">
+              {visibleCards.map((item) => (
+                <div 
+                  key={item.index} 
+                  className={`carousel-card ${item.position === 'active' ? 'active' : ''}`}
+                >
+                  <EventCard 
+                    title={item.event.title}
+                    date={item.event.date}
+                    location={item.event.location}
+                    description={item.event.description}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Кастомные кнопки навигации */}
+          <button 
+            className="carousel-control-prev" 
+            onClick={handlePrev}
+            aria-label="Предыдущий слайд"
           >
-            &#8592;
+            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
           </button>
-        )}
-        <div
-          className="upcoming-events"
-          ref={scrollContainerRef}
-          onScroll={handleScroll}
-        >
-          {Array(count)
-            .fill()
-            .map((_, index) => (
-              <EventCard key={index} className="event-card" />
-            ))}
+          <button 
+            className="carousel-control-next" 
+            onClick={handleNext}
+            aria-label="Следующий слайд"
+          >
+            <span className="carousel-control-next-icon" aria-hidden="true"></span>
+          </button>
         </div>
-        {showRightArrow && (
-          <button
-            className="scroll-button right"
-            onClick={() => scroll('right')}
-          >
-            &#8594;
-          </button>
-        )}
       </div>
     </section>
   );

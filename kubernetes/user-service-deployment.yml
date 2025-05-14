@@ -18,35 +18,42 @@ spec:
       - name: user-service
         image: ghcr.io/securitytrip/user-service:latest
         imagePullPolicy: Always
-        resources:
-          requests:
-            memory: "50Mi"
-            cpu: "50m"
-          limits:
-            memory: "256Mi"
-            cpu: "150m"
         ports:
-        - containerPort: 8000
+        - containerPort: 8080
         env:
-        - name: DB_HOST
-          valueFrom:
-              secretKeyRef:
-                name: postgres-secret
-                key: host
-        - name: DB_DATABASE
-          value: "usersDB"
-        - name: DB_USER
+        - name: SPRING_PROFILES_ACTIVE
+          value: "k8s"
+        - name: POSTGRES_USERNAME
           valueFrom:
             secretKeyRef:
               name: postgres-secret
               key: username
-        - name: DB_PASSWORD
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: postgres-secret
               key: password
-        - name: JWT_SECRET
+        - name: POSTGRES_HOST
           valueFrom:
             secretKeyRef:
-              name: jwt-secret
-              key: secret
+              name: postgres-secret
+              key: host
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "450m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10

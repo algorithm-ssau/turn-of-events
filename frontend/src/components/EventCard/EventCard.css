@@ -1,12 +1,98 @@
 .event-card {
-    background-color: #87D2A7;
-    border-radius: 10px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
+  border: none !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  background-color: #adebbb !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  cursor: pointer !important;
+  position: relative !important;
+  height: 100% !important;
+  margin-bottom: 15px !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
+
 .event-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.event-card:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+.event-card:active {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.event-card .card-img-top {
+  height: 180px;
+  object-fit: cover;
+  background-color: #adebbb;
+}
+
+.event-card .card-body {
+  padding: 15px;
+  background-color: #adebbb;
+}
+
+.event-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.event-card .card-text {
+  color: #333;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.event-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.event-date, .event-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.calendar-icon, .location-icon {
+  font-style: normal;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+  .event-card .card-img-top {
+    height: 160px;
+  }
+
+  .event-card .card-body {
+    padding: 12px;
+  }
+
+  .event-card .card-title {
+    font-size: 1rem;
+  }
 }
