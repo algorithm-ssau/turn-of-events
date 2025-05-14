@@ -7,7 +7,7 @@ const UpcomingEvents = ({ title = "Предстоящие события", count
   const [activeIndex, setActiveIndex] = useState(0);
   const [events, setEvents] = useState([]);
   const [visibleCards, setVisibleCards] = useState([]);
-
+  
   // Создаем массив событий на основе переданного количества
   useEffect(() => {
     const generateEvents = () => {
@@ -65,7 +65,7 @@ const UpcomingEvents = ({ title = "Предстоящие события", count
     window.addEventListener('resize', updateVisibleCards);
     return () => {
       window.removeEventListener('resize', updateVisibleCards);
-    };
+  };
   }, [activeIndex, events]);
 
   // Обработчик переключения на следующую карточку
@@ -94,18 +94,18 @@ const UpcomingEvents = ({ title = "Предстоящие события", count
                 <div 
                   key={item.index} 
                   className={`carousel-card ${item.position === 'active' ? 'active' : ''}`}
-                >
+          >
                   <EventCard 
                     title={item.event.title}
                     date={item.event.date}
                     location={item.event.location}
                     description={item.event.description}
                   />
-                </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-          
+        </div>
+        
           {/* Кастомные кнопки навигации */}
           <button 
             className="carousel-control-prev" 
@@ -114,13 +114,13 @@ const UpcomingEvents = ({ title = "Предстоящие события", count
           >
             <span className="carousel-control-prev-icon" aria-hidden="true"></span>
           </button>
-          <button 
+        <button
             className="carousel-control-next" 
             onClick={handleNext}
             aria-label="Следующий слайд"
-          >
+        >
             <span className="carousel-control-next-icon" aria-hidden="true"></span>
-          </button>
+        </button>
         </div>
       </div>
     </section>
