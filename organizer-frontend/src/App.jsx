@@ -1,4 +1,4 @@
-﻿//import { useState } from 'react'
+//import { useState } from 'react'
 //import reactLogo from './assets/react.svg'
 //import viteLogo from '/vite.svg'
 //import './App.css'
@@ -73,8 +73,15 @@ export default function App() {
 
     return (
         <><header><img className="logoimg" src={logoimg}></img>
-            <div style={{textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)'} }>
+            <div style={{textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',display:'inline-block'} }>
                 Оборот           событий
+            </div>
+            <div className="profile-icon">
+                <img
+                    src={'./icons8-гость-мужчина-48.png'}
+                    alt="Профиль"
+                    className="profile-image"
+                />
             </div>
         </header>
             
