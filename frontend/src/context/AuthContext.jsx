@@ -58,7 +58,12 @@ export const AuthProvider = ({ children }) => {
       // Реальная авторизация через API
       const response = await authService.login(credentials);
       setIsAuthenticated(true);
-      setUser(response.user);
+      // Формируем user из ответа
+      setUser({
+        name: response.name,
+        userId: response.userId,
+        username: response.username
+      });
       return { success: true };
     } catch (error) {
       return { 
@@ -110,4 +115,4 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-export default AuthContext; 
+export default AuthContext;

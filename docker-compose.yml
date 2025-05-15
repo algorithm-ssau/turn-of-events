@@ -197,22 +197,6 @@ services:
       timeout: 5s
       retries: 5
 
-  parser:
-    build:
-      context: ./parser-service
-      dockerfile: Dockerfile
-    environment:
-      - KAFKA_BROKER=kafka-1:29092
-      - MONGO_URI=mongodb://admin:admin123@mongodb:27017
-      - GROUP_ID=1
-      - TOPIC=parsing
-    depends_on:
-      - kafka-1
-      - kafka-2
-      - zookeeper
-    networks:
-      - app-network
-
 networks:
   app-network:
     driver: bridge
