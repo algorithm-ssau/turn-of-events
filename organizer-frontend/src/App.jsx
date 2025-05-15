@@ -1,12 +1,12 @@
 import './App.css';
 import React from "react";
-import Cardd from "./components/Card.jsx";
+import Cardd from "./components/Card/Card.jsx";
 import { Col } from 'react-bootstrap';
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import EventsList from "./components/EventsList.jsx";
-import EventCreateForm from "./components/EventCreateForm.jsx";
+import EventCreateForm from "./components/EventCreateForm/EventCreateForm.jsx";
 
 const EventBox = ({ imgg, text }) => {
     return (
