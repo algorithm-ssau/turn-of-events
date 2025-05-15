@@ -1,5 +1,5 @@
 ﻿import { Card } from 'react-bootstrap';
-import './cardd.css';
+import './Card.css';
 
 const Cardd = ({ title, date, location, description,img,handleCardClick }) => {
     //const navigate = useNavigate();

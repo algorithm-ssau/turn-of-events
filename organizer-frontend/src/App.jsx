@@ -1,10 +1,12 @@
 import './App.css';
 import React from "react";
-import Cardd from "./compts/cardd.jsx";
+import Cardd from "./components/Card.jsx";
 import { Col } from 'react-bootstrap';
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import EventsList from "./components/EventsList.jsx";
+import EventCreateForm from "./components/EventCreateForm.jsx";
 
 const EventBox = ({ imgg, text }) => {
     return (
@@ -58,69 +60,9 @@ export default function App() {
     return (
         <Router>
             <Routes>
-                <Route path="/organizer" element={<Mainn events={events} />} />
-                <Route path="/organizer/create" element={<Creats events={events} setEvents={setEvents} />} />
+                <Route path="/organizer" element={<EventsList events={events} />} />
+                <Route path="/organizer/create" element={<EventCreateForm events={events} setEvents={setEvents} />} />
             </Routes>
         </Router>
-    );
-}
-
-function Mainn({events }) {
-    const navigate = useNavigate();
-    
-    return (<>
-        <header><img className="logoimg" src="./logo.png"></img>
-            <div style={{textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',display:'inline-block'} }>
-                Оборот           событий
-            </div>
-            <div className="profile-icon">
-                <img
-                    src='./icons8-гость-мужчина-48.png'
-                    alt="Профиль"
-                    className="profile-image"
-                />
-            </div>
-        </header>
-            <p style={{ color: 'black', padding:'0 0 0 20px', fontSize:'20px'} }>Созданные Вами события:</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-            <Cardd title='Создать мероприятие' date=' ' location=' ' description=' ' handleCardClick={() => { navigate(`/organizer/create`); }} img='./create.jpg' />
-                {events.map((event, index) => (
-                    <Cardd key={index} {...event} />
-                ))}
-                {/*<Cardd title='fs' date='01.02.2025' location='f' description='fsd' />*/}
-                {/*<Cardd img='./i.webp' />*/}
-                {/*<Cardd />*/}
-                {/*<Cardd />*/}
-                {/*<Cardd />*/}
-                {/*<Cardd />*/}
-                {/*<Cardd />*/}
-                {/*<Cardd />*/}
-                {/*<Cardd />*/}
-            {/*<EventBox imgg={imgcr} text="создать мероприятие" />*/}
-            {/*<EventBox imgg={img} text="одно крутое мероприятие"  />*/}
-            {/*<EventBox imgg={img2} text="второе крутое мероприятие" />*/}
-            {/*<EventBox imgg={img3} text="еще одно мероприятие" />*/}
-        </div>
-    </>
-    )
-}
-function Creats({events,setEvents }) {
-    function Q() {
-        setEvents([...events, {
-            title: document.getElementById('title').value,
-            date: document.getElementById('date').value,
-            location: document.getElementById('location').value,
-            description: document.getElementById('description').value,
-            img: document.getElementById('img').value,
-        }]);
-    }
-    return (<>
-        <input id="title" placeholder="Название" />
-            <input id="date" type="date" />
-            <input id="location" placeholder="Место проведения" />
-            <input id="description" placeholder="Описание" />
-            <input id="img" placeholder="URL изображения" />
-        <button onClick={Q}>Добавить</button>
-    </>
     );
 }
