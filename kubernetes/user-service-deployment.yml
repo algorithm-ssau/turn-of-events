@@ -38,6 +38,11 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: host
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: secret
         resources:
           limits:
             memory: "1Gi"
