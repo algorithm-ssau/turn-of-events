@@ -140,6 +140,29 @@ services:
       timeout: 5s
       retries: 3
 
+  organizer-fronted:
+    build:
+      context: ./organizer-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5174:80"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost/api
+      - HOST=0.0.0.0
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    depends_on:
+      - api_gateway
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:5173" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   api_gateway:
     build:
       context: ./api-gateway
