@@ -50,8 +50,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        // Разрешаем все GET запросы к событиям без аутентификации
-        if (path.startsWith("/api/events/") && HttpMethod.GET.equals(method)) {
+        // Разрешаем все GET запросы к событиям без аутентификации (включая /api/events и /api/events/..)
+        if ((path.equals("/api/events") || path.startsWith("/api/events/")) && HttpMethod.GET.equals(method)) {
             return chain.filter(exchange);
         }
 
@@ -138,4 +138,4 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     public int getOrder() {
         return -100; // Высокий приоритет для запуска до других фильтров
     }
-} 
+}
