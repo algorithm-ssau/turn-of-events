@@ -4,27 +4,20 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: event-service
-          uri: http://event_service:8080/
-          predicates:
-            - Path=/api/events/**
-          filters:
-            - StripPrefix=0
-            
-        # - id: review-service
-        #   uri: http://user_service:8000/
-        #   predicates:
-        #     - Path=/api/reviews/**
-        #   filters:
-        #     - RewritePath=/api/reviews/(?<segment>.*), /api/review/$\{segment}
-            
-        # Authorization through user-service
         - id: auth-service
-          uri: http://user_service:8000/
+          uri: http://user-service:8080/
           predicates:
             - Path=/api/auth/**
           filters:
             - RewritePath=/api/auth/(?<segment>.*),/auth/${segment}
+
+        - id: event-service
+          uri: http://event-service:8080/
+          predicates:
+            - Path=/api/events/**
+          filters:
+            - StripPrefix=0
+
   main:
     web-application-type: REACTIVE
 
@@ -46,4 +39,4 @@ logging:
     root: INFO
     org.springframework.cloud.gateway: DEBUG
     reactor.netty: INFO
-    com.turnofevents.apigateway: DEBUG 
+    com.turnofevents.apigateway: DEBUG

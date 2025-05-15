@@ -152,15 +152,16 @@ services:
     networks:
       - app-network
     depends_on:
-      - user_service
-      - event_service
+      - user-service
+      - event-service
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  user_service:
+  user-service:
+    container_name: user-service
     build:
       context: ./user-service
       dockerfile: Dockerfile
@@ -173,7 +174,8 @@ services:
     depends_on:
       - postgres
 
-  event_service:
+  event-service:
+    container_name: event-service
     build:
       context: ./event-service
       dockerfile: Dockerfile
