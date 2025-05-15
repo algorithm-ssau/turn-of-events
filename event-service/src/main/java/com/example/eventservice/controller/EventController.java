@@ -168,6 +168,19 @@ public class EventController {
     }
     
     /**
+     * Получить все события, созданные пользователем по его userId
+     */
+    @Operation(summary = "Получить все события пользователя по userId")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Список событий пользователя успешно получен"),
+            @ApiResponse(responseCode = "404", description = "События не найдены")
+    })
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<EventDto>> getEventsByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(eventService.findEventsByUserId(userId));
+    }
+    
+    /**
      * Вспомогательный метод для логирования информации о текущем пользователе
      */
     private void logCurrentUser(String action) {

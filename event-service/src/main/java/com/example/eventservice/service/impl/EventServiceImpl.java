@@ -104,6 +104,14 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<EventDto> findEventsByUserId(Long userId) {
+        List<Event> events = eventRepository.findByUserId(userId);
+        return events.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
     // Маппинг из DTO в Entity
     private Event mapToEntity(EventDto eventDto) {
         return Event.builder()
@@ -118,6 +126,7 @@ public class EventServiceImpl implements EventService {
                 .director(eventDto.getDirector())
                 .link(eventDto.getLink())
                 .description(eventDto.getDescription())
+                .userId(eventDto.getUserId())
                 .build();
     }
 
@@ -136,6 +145,7 @@ public class EventServiceImpl implements EventService {
                 .director(event.getDirector())
                 .link(event.getLink())
                 .description(event.getDescription())
+                .userId(event.getUserId())
                 .build();
     }
-} 
+}
