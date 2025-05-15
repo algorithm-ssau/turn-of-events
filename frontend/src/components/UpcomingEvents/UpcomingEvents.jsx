@@ -1,67 +1,126 @@
-import './UpcomingEvents.css';
+import React, { useState, useEffect } from 'react';
 import EventCard from '../EventCard/EventCard';
-import { useRef, useState, useEffect } from 'react';
+import axios from 'axios';
+import './UpcomingEvents.css';
 
-const UpcomingEvents = ({ title, count }) => {
-  const scrollContainerRef = useRef(null);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(false);
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
-  const handleScroll = () => {
-    const container = scrollContainerRef.current;
-    setShowLeftArrow(container.scrollLeft > 0);
-    setShowRightArrow(
-      container.scrollLeft < container.scrollWidth - container.clientWidth
-    );
-  };
+function getRandomEvents(events, maxCount) {
+  if (!Array.isArray(events) || events.length === 0) return [];
+  const count = Math.min(getRandomInt(1, Math.min(maxCount, events.length)), events.length);
+  const shuffled = [...events].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
+const UpcomingEvents = ({ title = "Ближайшие мероприятия", maxCount = 6 }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [events, setEvents] = useState([]);
+  const [visibleCards, setVisibleCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (container.scrollWidth > container.clientWidth) {
-      setShowRightArrow(true);
-    }
-  }, []);
+    const fetchEvents = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get('/api/events');
+        const allEvents = response.data && Array.isArray(response.data.content) ? response.data.content : [];
+        const randomEvents = getRandomEvents(allEvents, maxCount);
+        setEvents(randomEvents);
+      } catch (err) {
+        setError('Ошибка загрузки ближайших мероприятий');
+        setEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, [maxCount]);
 
-  const scroll = (direction) => {
-    const container = scrollContainerRef.current;
-    const cardWidth = container.querySelector('.event-card').offsetWidth + 20; // Ширина карточки + gap
-    container.scrollBy({
-      left: direction === 'right' ? cardWidth : -cardWidth,
-      behavior: 'smooth',
-    });
+  useEffect(() => {
+    const updateVisibleCards = () => {
+      if (events.length === 0) return;
+      const totalCards = events.length;
+      const leftIndex = (activeIndex - 1 + totalCards) % totalCards;
+      const centerIndex = activeIndex;
+      const rightIndex = (activeIndex + 1) % totalCards;
+      let cards = [];
+      if (window.innerWidth <= 576) {
+        cards = [
+          { event: events[centerIndex], index: centerIndex, position: 'active' }
+        ];
+      } else if (window.innerWidth <= 768) {
+        cards = [
+          { event: events[centerIndex], index: centerIndex, position: 'active' },
+          { event: events[rightIndex], index: rightIndex, position: 'right' }
+        ];
+      } else {
+        cards = [
+          { event: events[leftIndex], index: leftIndex, position: 'left' },
+          { event: events[centerIndex], index: centerIndex, position: 'active' },
+          { event: events[rightIndex], index: rightIndex, position: 'right' }
+        ];
+      }
+      setVisibleCards(cards);
+    };
+    updateVisibleCards();
+    window.addEventListener('resize', updateVisibleCards);
+    return () => {
+      window.removeEventListener('resize', updateVisibleCards);
+    };
+  }, [activeIndex, events]);
+
+  const handleNext = () => {
+    setActiveIndex((prevIndex) => (prevIndex + 1) % events.length);
   };
+  const handlePrev = () => {
+    setActiveIndex((prevIndex) => (prevIndex - 1 + events.length) % events.length);
+  };
+
+  if (loading) return null;
+  if (error || events.length === 0) return null;
 
   return (
     <section className="upcoming-events-section">
-      <h2>{title}</h2>
-      <div className="upcoming-events-container">
-        {showLeftArrow && (
+      <h2 className="section-title">{title}</h2>
+      <div className="carousel-container">
+        <div className="single-row-carousel">
+          <div className="carousel-slide">
+            <div className="visible-cards">
+              {visibleCards.map((item) => (
+                <div
+                  key={item.index}
+                  className={`carousel-card ${item.position === 'active' ? 'active' : ''}`}
+                >
+                  <EventCard
+                    id={item.event.id}
+                    title={item.event.title}
+                    date={item.event.date}
+                    location={item.event.place || item.event.location}
+                    description={item.event.description}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
           <button
-            className="scroll-button left"
-            onClick={() => scroll('left')}
+            className="carousel-control-prev"
+            onClick={handlePrev}
+            aria-label="Предыдущий слайд"
           >
-            &#8592;
+            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
           </button>
-        )}
-        <div
-          className="upcoming-events"
-          ref={scrollContainerRef}
-          onScroll={handleScroll}
-        >
-          {Array(count)
-            .fill()
-            .map((_, index) => (
-              <EventCard key={index} className="event-card" />
-            ))}
+          <button
+            className="carousel-control-next"
+            onClick={handleNext}
+            aria-label="Следующий слайд"
+          >
+            <span className="carousel-control-next-icon" aria-hidden="true"></span>
+          </button>
         </div>
-        {showRightArrow && (
-          <button
-            className="scroll-button right"
-            onClick={() => scroll('right')}
-          >
-            &#8594;
-          </button>
-        )}
       </div>
     </section>
   );

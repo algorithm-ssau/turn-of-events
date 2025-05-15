@@ -1,52 +1,79 @@
-import './Header.css';
 import { useState, useRef, useEffect } from 'react';
-
+import { Navbar, Container, Form, Nav, NavDropdown } from 'react-bootstrap';
+import { useAuth } from '../../context/AuthContext';
+import LoginButton from '../LoginButton/LoginButton';
+import './Header.css';
 const Header = () => {
+  const { isAuthenticated, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef(null); // Реф для меню
 
-  const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
+    const menuRef = useRef(null);
 
   const handleClickOutside = (event) => {
-    // Если клик произошёл вне меню, закрываем его
     if (menuRef.current && !menuRef.current.contains(event.target)) {
       setIsMenuOpen(false);
     }
   };
 
   useEffect(() => {
-    // Добавляем обработчик кликов на документ
     document.addEventListener('mousedown', handleClickOutside);
-
-    // Убираем обработчик при размонтировании компонента
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   return (
-    <header className="header">
-      <div className="logo">Оборот событий</div>
-      <div className="search-bar">
-        <input type="text" placeholder="Поиск..." />
+    <Navbar expand="lg" className="header">
+      <Container fluid>
+        <Navbar.Brand className="logo" href="/">Оборот событий</Navbar.Brand>
+        <Form className="d-flex mx-auto search-bar">
+          <Form.Control
+            type="search"
+            placeholder="Поиск..."
+            className="me-2"
+            aria-label="Search"
+          />
+        </Form>
+        {/* Условный рендеринг: кнопка "Войти" или иконка профиля */}
+        {isAuthenticated ? (
+  <div className="profile-container" ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+    <div
+      className="profile-trigger"
+      style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+      onClick={() => setIsMenuOpen((prev) => !prev)}
+    >
+      <div className="profile-icon">
+        <img
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXVzZXIiPjxwYXRoIGQ9Ik0xOSAyMXYtMmE0IDQgMCAwIDAtNC00SDlhNCA0IDAgMCAwLTQgNHYyIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0Ii8+PC9zdmc+"
+          alt="Профиль"
+          className="profile-image"
+        />
       </div>
-      <div className="profile-container" ref={menuRef}>
-        <div className="profile-icon" onClick={toggleMenu}>
-          <img src="./public/icons8-гость-мужчина-48.png" alt="Профиль" className="profile-image" />
-        </div>
-        {isMenuOpen && (
-          <div className="profile-menu">
-            <ul>
-              <li>Профиль</li>
-              <li>Настройки</li>
-              <li>Выход</li>
-            </ul>
-          </div>
+      <span style={{ fontWeight: 500, color: '#0F114B', fontSize: '1rem', whiteSpace: 'nowrap' }}>{user?.username}</span>
+    </div>
+    <NavDropdown
+      title={null} // убираем стрелку
+      id="basic-nav-dropdown"
+      show={isMenuOpen}
+      onToggle={() => {}}
+      align="end"
+      className="profile-dropdown"
+      style={{ marginLeft: '0' }}
+      renderToggle={undefined} // предотвращаем появление стрелки
+    >
+      <NavDropdown.Item onClick={() => {
+        window.location.href = '/organizer';
+      }}>Профиль</NavDropdown.Item>
+      <NavDropdown.Item>Настройки</NavDropdown.Item>
+      <NavDropdown.Divider />
+      <NavDropdown.Item onClick={logout}>Выход</NavDropdown.Item>
+    </NavDropdown>
+  </div>
+) : (
+          <LoginButton />
         )}
-      </div>
-    </header>
+      </Container>
+    </Navbar>
   );
 };
 

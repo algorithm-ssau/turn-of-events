@@ -24,21 +24,23 @@ services:
       retries: 3
     depends_on:
       - api_gateway
+      - frontend
 
   postgres:
     image: postgres:latest
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=afisha_db
+      - POSTGRES_DB=defaultdb
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin123
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]
+      test: [ "CMD-SHELL", "pg_isready -U admin" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -120,7 +122,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"
+      - "5173:80"
     environment:
       - NODE_ENV=development
       - VITE_API_URL=http://localhost/api
@@ -138,6 +140,29 @@ services:
       timeout: 5s
       retries: 3
 
+  organizer-fronted:
+    build:
+      context: ./organizer-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5174:80"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost/api
+      - HOST=0.0.0.0
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    depends_on:
+      - api_gateway
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:5173" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   api_gateway:
     build:
       context: ./api-gateway
@@ -150,61 +175,50 @@ services:
     networks:
       - app-network
     depends_on:
-      - user_service
-      - event_service
+      - user-service
+      - event-service
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  user_service:
+  user-service:
+    container_name: user-service
     build:
       context: ./user-service
       dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: "docker"
     ports:
-      - "8000:8000"
+      - "8000:8080"
     networks:
       - app-network
     depends_on:
       - postgres
 
-  event_service:
+  event-service:
+    container_name: event-service
     build:
       context: ./event-service
       dockerfile: Dockerfile
     ports:
       - "8085:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/afisha_db
-      - SPRING_DATASOURCE_USERNAME=admin
-      - SPRING_DATASOURCE_PASSWORD=admin123
+      SPRING_PROFILES_ACTIVE: "docker"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/eventsDB"
+      SPRING_DATASOURCE_USERNAME: "admin"
+      SPRING_DATASOURCE_PASSWORD: "admin123"
     networks:
       - app-network
     depends_on:
       - postgres
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
-
-  parser:
-    build:
-      context: ./parser-service
-      dockerfile: Dockerfile
-    environment:
-      - KAFKA_BROKER=kafka-1:29092
-      - MONGO_URI=mongodb://admin:admin123@mongodb:27017
-      - GROUP_ID=1
-      - TOPIC=parsing
-    depends_on:
-      - kafka-1
-      - kafka-2
-      - zookeeper
-    networks:
-      - app-network
 
 networks:
   app-network:

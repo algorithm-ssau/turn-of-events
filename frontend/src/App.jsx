@@ -1,24 +1,28 @@
 import './App.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header'
 import Events from './components/Events/Events'
 import UpcomingEvents from './components/UpcomingEvents/UpcomingEvents'
-
-import {User} from './User';
+import EventDetails from './components/EventDetails/EventDetails'
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <>
-    {/* <Router> */}
+    <AuthProvider>
+      <Router>
       <Header />
+        <Routes>
+          <Route path="/" element={
       <div className="event-container">
-        {/* <switch>
-          <Route path="/user" component={User} />
-        </switch> */}
-        <UpcomingEvents title="Ближайшие мероприятия" count={3} />
+        <UpcomingEvents title="Ближайшие мероприятия" count={10} />
         <Events title="Все мероприятия" count={9} />
       </div>
-    {/* /</Router> */}
-    </>
+          } />
+          <Route path="/event/:id" element={<EventDetails />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   )
 }
 
