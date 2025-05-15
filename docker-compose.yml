@@ -24,18 +24,19 @@ services:
       retries: 3
     depends_on:
       - api_gateway
+      - frontend
 
   postgres:
     image: postgres:latest
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=usersDB
+      - POSTGRES_DB=defaultdb
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin123
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-multiple-dbs.sql:/docker-entrypoint-initdb.d/init-multiple-dbs.sql
+      - ./initdb:/docker-entrypoint-initdb.d
     networks:
       - app-network
     healthcheck:
@@ -121,7 +122,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"
+      - "5173:80"
     environment:
       - NODE_ENV=development
       - VITE_API_URL=http://localhost/api
@@ -151,28 +152,30 @@ services:
     networks:
       - app-network
     depends_on:
-      - user_service
-      - event_service
+      - user-service
+      - event-service
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  user_service:
+  user-service:
+    container_name: user-service
     build:
       context: ./user-service
       dockerfile: Dockerfile
     environment:
       SPRING_PROFILES_ACTIVE: "docker"
     ports:
-      - "8000:8000"
+      - "8000:8080"
     networks:
       - app-network
     depends_on:
       - postgres
 
-  event_service:
+  event-service:
+    container_name: event-service
     build:
       context: ./event-service
       dockerfile: Dockerfile

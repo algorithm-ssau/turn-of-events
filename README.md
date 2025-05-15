@@ -82,7 +82,7 @@
    cd turn-of-events
 
 ### Доступ
-Сайт доступен по адресу [http://147.45.249.213/](http://147.45.249.213/)
+Сайт доступен по адресу [http://217.198.13.157/](http://217.198.13.157/)
 
 # Вклад в проект
 * Лысов Илья [SecurityTrip](https://github.com/SecurityTrip) - Team Lead, Backend 
