@@ -1,5 +1,5 @@
-import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header'
 import Events from './components/Events/Events'
@@ -15,7 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={
       <div className="event-container">
-        <UpcomingEvents title="Ближайшие мероприятия" count={10} />
+        <UpcomingEvents title="Ближайшие мероприятия" count={100} />
         <Events title="Все мероприятия" count={9} />
       </div>
           } />

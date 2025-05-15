@@ -51,8 +51,11 @@ public class Event {
     @Column(columnDefinition = "TEXT")
     private String description;
     
+    @Column(name = "user_id", nullable = true)
+    private Long userId;
+    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
-} 
+}

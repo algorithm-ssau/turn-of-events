@@ -58,4 +58,7 @@ public class EventDto {
     @Schema(description = "Описание события", example = "Описание театральной постановки...")
     @Builder.Default
     private String description = "";
+    
+    @Schema(description = "ID пользователя, создавшего событие", example = "10")
+    private Long userId;
 }

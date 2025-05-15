@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Navbar, Container, Form, Nav, NavDropdown } from 'react-bootstrap';
+import { Navbar, Container, Form, Nav, NavDropdown, SplitButton, Dropdown } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 import LoginButton from '../LoginButton/LoginButton';
 import './Header.css';
@@ -35,39 +35,37 @@ const Header = () => {
           />
         </Form>
         {/* Условный рендеринг: кнопка "Войти" или иконка профиля */}
-        {isAuthenticated ? (
+{isAuthenticated ? (
   <div className="profile-container" ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-    <div
-      className="profile-trigger"
-      style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-      onClick={() => setIsMenuOpen((prev) => !prev)}
-    >
+    <Dropdown show={isMenuOpen} onToggle={() => setIsMenuOpen((prev) => !prev)} className="profile-dropdown" align="start" drop="start">
+      <Dropdown.Toggle
+        as="span"
+        id="profile-dropdown"
+        style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
+        onClick={() => setIsMenuOpen((prev) => !prev)}
+      >
       <div className="profile-icon">
         <img
-          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXVzZXIiPjxwYXRoIGQ9Ik0xOSAyMXYtMmE0IDQgMCAwIDAtNC00SDlhNCA0IDAgMCAwLTQgNHYyIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0Ii8+PC9zdmc+"
+          src={'./icons8-гость-мужчина-48.png'}
           alt="Профиль"
           className="profile-image"
         />
       </div>
-      <span style={{ fontWeight: 500, color: '#0F114B', fontSize: '1rem', whiteSpace: 'nowrap' }}>{user?.username}</span>
-    </div>
-    <NavDropdown
-      title={null} // убираем стрелку
-      id="basic-nav-dropdown"
-      show={isMenuOpen}
-      onToggle={() => {}}
-      align="end"
-      className="profile-dropdown"
-      style={{ marginLeft: '0' }}
-      renderToggle={undefined} // предотвращаем появление стрелки
-    >
-      <NavDropdown.Item onClick={() => {
-        window.location.href = '/organizer';
-      }}>Профиль</NavDropdown.Item>
-      <NavDropdown.Item>Настройки</NavDropdown.Item>
-      <NavDropdown.Divider />
-      <NavDropdown.Item onClick={logout}>Выход</NavDropdown.Item>
-    </NavDropdown>
+    </Dropdown.Toggle>
+    <Dropdown.Menu>
+      <Dropdown.Item>
+        <img src="./icons8-гость-мужчина-48.png" alt="" />
+        {user && user.username ? user.username : 'Имя'}
+      </Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item className="profile-right" onClick={() => { window.location.href = '/organizer'; }}>
+        Профиль
+      </Dropdown.Item>
+      <Dropdown.Item className="profile-right">Настройки</Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item className="profile-right" onClick={logout}>Выход</Dropdown.Item>
+    </Dropdown.Menu>
+    </Dropdown>
   </div>
 ) : (
           <LoginButton />
