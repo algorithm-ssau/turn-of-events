@@ -40,6 +40,8 @@ public class SecurityConfig {
                         // Разрешаем доступ к публичным эндпоинтам всем
                         .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        // Делаем документацию Swagger общедоступной
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         // Все остальные запросы требуют аутентификации
                         .anyRequest().authenticated()
                 )
@@ -83,4 +85,4 @@ public class SecurityConfig {
             filterChain.doFilter(request, response);
         }
     }
-} 
+}
