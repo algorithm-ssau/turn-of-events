@@ -140,6 +140,29 @@ services:
       timeout: 5s
       retries: 3
 
+  organizer-fronted:
+    build:
+      context: ./organizer-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5174:80"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost/api
+      - HOST=0.0.0.0
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    depends_on:
+      - api_gateway
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:5173" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   api_gateway:
     build:
       context: ./api-gateway
@@ -196,22 +219,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  parser:
-    build:
-      context: ./parser-service
-      dockerfile: Dockerfile
-    environment:
-      - KAFKA_BROKER=kafka-1:29092
-      - MONGO_URI=mongodb://admin:admin123@mongodb:27017
-      - GROUP_ID=1
-      - TOPIC=parsing
-    depends_on:
-      - kafka-1
-      - kafka-2
-      - zookeeper
-    networks:
-      - app-network
 
 networks:
   app-network:

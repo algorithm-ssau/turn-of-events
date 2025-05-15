@@ -14,34 +14,20 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        // Проверяем наличие токена в localStorage
         const token = localStorage.getItem('authToken');
         if (!token) {
           setLoading(false);
           return;
         }
-        
-        // Проверяем валидность токена
-        const isValid = await authService.validateToken();
-        
-        if (isValid) {
-          // Получаем данные пользователя
-          const userData = await authService.getCurrentUser();
+        // Восстанавливаем user из localStorage
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          setUser(JSON.parse(userStr));
           setIsAuthenticated(true);
-          setUser(userData);
-        } else {
-          // Если токен невалидный, пытаемся обновить его
-          try {
-            const refreshed = await authService.refreshToken();
-            if (refreshed) {
-              const userData = await authService.getCurrentUser();
-              setIsAuthenticated(true);
-              setUser(userData);
-            }
-          } catch (refreshError) {
-            console.error('Ошибка при обновлении токена:', refreshError);
-          }
         }
+        // Проверяем валидность токена (опционально)
+        // const isValid = await authService.validateToken();
+        // if (!isValid) { ... }
       } catch (error) {
         console.error('Ошибка при загрузке данных пользователя:', error);
       } finally {
@@ -58,7 +44,14 @@ export const AuthProvider = ({ children }) => {
       // Реальная авторизация через API
       const response = await authService.login(credentials);
       setIsAuthenticated(true);
-      setUser(response.user);
+      // Формируем user из ответа
+      const userObj = {
+        name: response.name,
+        userId: response.userId,
+        username: response.username
+      };
+      setUser(userObj);
+      localStorage.setItem('user', JSON.stringify(userObj));
       return { success: true };
     } catch (error) {
       return { 
@@ -73,6 +66,7 @@ export const AuthProvider = ({ children }) => {
     authService.logout();
     setIsAuthenticated(false);
     setUser(null);
+    localStorage.removeItem('user');
   };
 
   // Функция для регистрации нового пользователя
@@ -110,4 +104,4 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-export default AuthContext; 
+export default AuthContext;

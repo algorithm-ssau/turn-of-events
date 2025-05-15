@@ -58,7 +58,7 @@ const LoginButton = () => {
       
       if (result.success) {
         handleClose();
-        window.location.reload(); // Перезагружаем страницу для обновления состояния авторизации
+        // window.location.reload(); // Удаляем перезагрузку страницы
       } else {
         setErrorMessage(result.message || 'Ошибка при входе');
       }
@@ -254,4 +254,4 @@ const LoginButton = () => {
   );
 };
 
-export default LoginButton; 
+export default LoginButton;

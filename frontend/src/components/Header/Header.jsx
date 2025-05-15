@@ -36,30 +36,40 @@ const Header = () => {
         </Form>
         {/* Условный рендеринг: кнопка "Войти" или иконка профиля */}
         {isAuthenticated ? (
-      <div className="profile-container" ref={menuRef}>
-            <NavDropdown 
-              title={
-                <div className="profile-icon">
-                  <img 
-                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXVzZXIiPjxwYXRoIGQ9Ik0xOSAyMXYtMmE0IDQgMCAwIDAtNC00SDlhNCA0IDAgMCAwLTQgNHYyIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0Ii8+PC9zdmc+" 
-                    alt="Профиль" 
-                    className="profile-image" 
-                  />
-        </div>
-              }
-              id="basic-nav-dropdown"
-              show={isMenuOpen}
-              onToggle={(isOpen) => setIsMenuOpen(isOpen)}
-              align="end"
-              className="profile-dropdown"
-            >
-              <NavDropdown.Item>Профиль</NavDropdown.Item>
-              <NavDropdown.Item>Настройки</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item onClick={logout}>Выход</NavDropdown.Item>
-            </NavDropdown>
-          </div>
-        ) : (
+  <div className="profile-container" ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+    <div
+      className="profile-trigger"
+      style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+      onClick={() => setIsMenuOpen((prev) => !prev)}
+    >
+      <div className="profile-icon">
+        <img
+          src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXVzZXIiPjxwYXRoIGQ9Ik0xOSAyMXYtMmE0IDQgMCAwIDAtNC00SDlhNCA0IDAgMCAwLTQgNHYyIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0Ii8+PC9zdmc+"
+          alt="Профиль"
+          className="profile-image"
+        />
+      </div>
+      <span style={{ fontWeight: 500, color: '#0F114B', fontSize: '1rem', whiteSpace: 'nowrap' }}>{user?.username}</span>
+    </div>
+    <NavDropdown
+      title={null} // убираем стрелку
+      id="basic-nav-dropdown"
+      show={isMenuOpen}
+      onToggle={() => {}}
+      align="end"
+      className="profile-dropdown"
+      style={{ marginLeft: '0' }}
+      renderToggle={undefined} // предотвращаем появление стрелки
+    >
+      <NavDropdown.Item onClick={() => {
+        window.location.href = '/organizer';
+      }}>Профиль</NavDropdown.Item>
+      <NavDropdown.Item>Настройки</NavDropdown.Item>
+      <NavDropdown.Divider />
+      <NavDropdown.Item onClick={logout}>Выход</NavDropdown.Item>
+    </NavDropdown>
+  </div>
+) : (
           <LoginButton />
         )}
       </Container>
