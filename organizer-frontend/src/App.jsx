@@ -1,48 +1,12 @@
-//import { useState } from 'react'
-//import reactLogo from './assets/react.svg'
-//import viteLogo from '/vite.svg'
-//import './App.css'
-
-//export default function App() {
-//const [count, setCount] = useState(0)
-
-//return (
-//<>
-//  <div>
-//    <a href="https://vite.dev" target="_blank">
-//      <img src={viteLogo} className="logo" alt="Vite logo" />
-//    </a>
-//    <a href="https://react.dev" target="_blank">
-//      <img src={reactLogo} className="logo react" alt="React logo" />
-//    </a>
-//  </div>
-//  <h1>Vite + React</h1>
-//  <div className="card">
-//    <button onClick={() => setCount((count) => count + 1)}>
-//      count is {count}
-//    </button>
-//    <p>
-//      Edit <code>src/App.jsx</code> and save to test HMR
-//    </p>
-//  </div>
-//  <p className="read-the-docs">
-//    Click on the Vite and React logos to learn more
-//  </p>
-//</>
-//)
-//}
-
-
-
 import './App.css';
 import React from "react";
-import imgcr from "./create.jpg";
-import img from "./img.jpg";
-import img2 from "./img2.jpg";
-import img3 from "./img3.jpg";
-import logoimg from "./logo.png";
-import Cardd from "./compts/cardd.jsx";
+import Cardd from "./components/Card/Card.jsx";
 import { Col } from 'react-bootstrap';
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import EventsList from "./components/EventsList.jsx";
+import EventCreateForm from "./components/EventCreateForm/EventCreateForm.jsx";
 
 const EventBox = ({ imgg, text }) => {
     return (
@@ -70,32 +34,35 @@ const EventBox = ({ imgg, text }) => {
     );
 };
 export default function App() {
-
+    const [events, setEvents] = useState([
+        {
+            title: 'Концерт',
+            date: '10.06.2025',
+            location: 'клуб А',
+            description: 'Выступление группы XYZ',
+            img: './concert.webp',
+        },
+        {
+            title: 'Выставка',
+            date: '15.06.2025',
+            location: 'музей B',
+            description: 'Современные технологии',
+            img: './vist.webp',
+        },
+        {
+            title: 'Митап',
+            date: '20.06.2025',
+            location: 'коворкинг С',
+            description: 'IT-сообщество: встреча',
+            img: './itmeet.webp',
+        },
+    ]);
     return (
-        <><header><img className="logoimg" src={logoimg}></img>
-            <div style={{textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',display:'inline-block'} }>
-                Оборот           событий
-            </div>
-            <div className="profile-icon">
-                <img
-                    src={'./icons8-гость-мужчина-48.png'}
-                    alt="Профиль"
-                    className="profile-image"
-                />
-            </div>
-        </header>
-            
-        <div style={{ display: "flex" }}>
-                <Cardd />
-                <Cardd />
-                <Cardd />
-                <Cardd />
-            {/*<EventBox imgg={imgcr} text="создать мероприятие" />*/}
-            {/*<EventBox imgg={img} text="одно крутое мероприятие"  />*/}
-            {/*<EventBox imgg={img2} text="второе крутое мероприятие" />*/}
-            {/*<EventBox imgg={img3} text="еще одно мероприятие" />*/}
-            </div>
-        </>
+        <Router>
+            <Routes>
+                <Route path="/organizer" element={<EventsList events={events} />} />
+                <Route path="/organizer/create" element={<EventCreateForm events={events} setEvents={setEvents} />} />
+            </Routes>
+        </Router>
     );
 }
-

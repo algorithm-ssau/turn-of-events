@@ -81,14 +81,9 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         // Токен валиден, добавляем информацию о пользователе в заголовки запроса
         String username = jwtUtil.getUsernameFromToken(token);
-        List<String> roles = jwtUtil.getRolesFromToken(token);
-        
-        // Формируем заголовок с ролями
-        String rolesHeader = roles.stream().collect(Collectors.joining(","));
-        
+        // Игнорируем роли, не добавляем X-Auth-Roles
         ServerHttpRequest modifiedRequest = request.mutate()
                 .header("X-Auth-User", username)
-                .header("X-Auth-Roles", rolesHeader)
                 .build();
 
         return chain.filter(exchange.mutate().request(modifiedRequest).build());

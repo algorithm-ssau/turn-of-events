@@ -15,7 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={
       <div className="event-container">
-        <UpcomingEvents title="Ближайшие мероприятия" count={10} />
+        <UpcomingEvents title="Ближайшие мероприятия" count={100} />
         <Events title="Все мероприятия" count={9} />
       </div>
           } />
