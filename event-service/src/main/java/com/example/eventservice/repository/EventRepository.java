@@ -12,4 +12,5 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByPlace(String place);
     List<Event> findByGenre(String genre);
     List<Event> findByUserId(Long userId);
+    List<Event> findTop10ByDateAfterOrderByDateAsc(String currentDate);
 }

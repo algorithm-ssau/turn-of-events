@@ -171,7 +171,7 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JWT_SECRET=secure_secret_key_for_jwt_token_generation
+      - JWT_SECRET=D4fN8Qr6Zu1WgX9Cv3PyL5Mk2Jh7Vt0s
     networks:
       - app-network
     depends_on:

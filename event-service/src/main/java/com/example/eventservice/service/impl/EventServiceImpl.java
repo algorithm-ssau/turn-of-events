@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,6 +108,15 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventDto> findEventsByUserId(Long userId) {
         List<Event> events = eventRepository.findByUserId(userId);
+        return events.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventDto> findUpcomingEvents() {
+        String today = LocalDate.now().toString();
+        List<Event> events = eventRepository.findTop10ByDateAfterOrderByDateAsc(today);
         return events.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());

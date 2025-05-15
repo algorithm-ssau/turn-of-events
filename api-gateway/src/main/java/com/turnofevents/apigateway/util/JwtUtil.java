@@ -44,7 +44,8 @@ public class JwtUtil {
     public List<String> getRolesFromToken(String token) {
         try {
             Claims claims = getAllClaimsFromToken(token);
-            return claims.get("roles", List.class);
+            List<String> roles = claims.get("roles", List.class);
+            return roles != null ? roles : new ArrayList<>();
         } catch (Exception e) {
             return new ArrayList<>();
         }
@@ -66,4 +67,4 @@ public class JwtUtil {
             return false;
         }
     }
-} 
+}

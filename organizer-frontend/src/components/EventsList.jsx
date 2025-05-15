@@ -8,6 +8,9 @@ import EventCreateForm from "./EventCreateForm/EventCreateForm.jsx";
 import DeleteSelectedButton from "./DeleteSelectedButton/DeleteSelectedButton.jsx";
 
 const API_URL = `${window.location.origin.replace(/\/organizer.*/, '')}/api/events`;
+const user = JSON.parse(localStorage.getItem('user'));
+const userId = user?.userId;
+const token = localStorage.getItem('authToken');
 
 function EventsList({}) {
     const [events, setEvents] = useState([]);
@@ -17,17 +20,22 @@ function EventsList({}) {
     const [selectedEventIdx, setSelectedEventIdx] = useState(null);
 
     useEffect(() => {
-        fetch(`${API_URL}`)
+        if (activeTab !== 'events' || !userId) return;
+        fetch(`${API_URL}/user/${userId}`)
             .then(res => res.json())
             .then(data => setEvents(data))
             .catch(() => setEvents([]));
-    }, []);
+    }, [activeTab, userId]);
 
     const handleAddEvent = async (newEvent) => {
+        if (!userId || !token) return;
         const response = await fetch(`${API_URL}`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newEvent)
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ ...newEvent, userId })
         });
         if (response.ok) {
             const created = await response.json();

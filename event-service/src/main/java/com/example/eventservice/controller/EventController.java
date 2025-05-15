@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +37,6 @@ public class EventController {
             @ApiResponse(responseCode = "400", description = "Некорректные данные запроса")
     })
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<EventDto> createEvent(@Valid @RequestBody EventDto eventDto) {
         logCurrentUser("Создание события");
         return new ResponseEntity<>(eventService.createEvent(eventDto), HttpStatus.CREATED);
@@ -104,7 +102,6 @@ public class EventController {
             @ApiResponse(responseCode = "400", description = "Некорректные данные запроса")
     })
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<EventDto> updateEvent(
             @PathVariable Long id, 
             @Valid @RequestBody EventDto eventDto) {
@@ -121,7 +118,6 @@ public class EventController {
             @ApiResponse(responseCode = "404", description = "Событие не найдено")
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         logCurrentUser("Удаление события с ID: " + id);
         eventService.deleteEvent(id);
@@ -180,6 +176,18 @@ public class EventController {
         return ResponseEntity.ok(eventService.findEventsByUserId(userId));
     }
     
+    /**
+     * Получить 10 ближайших будущих мероприятий (по дате)
+     */
+    @Operation(summary = "Получить 10 ближайших будущих мероприятий")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Список ближайших событий успешно получен")
+    })
+    @GetMapping("/upcoming")
+    public ResponseEntity<List<EventDto>> getUpcomingEvents() {
+        return ResponseEntity.ok(eventService.findUpcomingEvents());
+    }
+
     /**
      * Вспомогательный метод для логирования информации о текущем пользователе
      */

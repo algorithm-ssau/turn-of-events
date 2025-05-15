@@ -17,4 +17,5 @@ public interface EventService {
     List<EventDto> findEventsByPlace(String place);
     List<EventDto> findEventsByGenre(String genre);
     List<EventDto> findEventsByUserId(Long userId);
+    List<EventDto> findUpcomingEvents();
 }
