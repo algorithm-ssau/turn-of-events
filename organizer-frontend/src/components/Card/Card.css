@@ -1,0 +1,37 @@
+.cardd {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 16px;
+    margin: 12px;
+    width: 300px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.cardd:hover {
+    box-shadow: 0 4px 16px rgba(135,210,167,0.25);
+}
+.cardd-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+.cardd-content {
+    width: 100%;
+    text-align: left;
+}
+.cardd-content h3 {
+    margin: 0 0 8px 0;
+    color: #0F114B;
+    font-size: 1.2rem;
+}
+.cardd-content p {
+    margin: 0 0 4px 0;
+    color: #444;
+    font-size: 1rem;
+}

@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { Navbar, Container, Form, Nav, NavDropdown } from 'react-bootstrap';
+import { Navbar, Container, Form, Nav, NavDropdown, SplitButton, Dropdown } from 'react-bootstrap';
+import { useAuth } from '../../context/AuthContext';
+import LoginButton from '../LoginButton/LoginButton';
 import './Header.css';
-
 const Header = () => {
+  const { isAuthenticated, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef(null);
+
+    const menuRef = useRef(null);
 
   const handleClickOutside = (event) => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -31,29 +34,42 @@ const Header = () => {
             aria-label="Search"
           />
         </Form>
-        <div className="profile-container" ref={menuRef}>
-          <NavDropdown 
-            title={
-              <div className="profile-icon">
-                <img 
-                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXVzZXIiPjxwYXRoIGQ9Ik0xOSAyMXYtMmE0IDQgMCAwIDAtNC00SDlhNCA0IDAgMCAwLTQgNHYyIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSI3IiByPSI0Ii8+PC9zdmc+" 
-                  alt="Профиль" 
-                  className="profile-image" 
-                />
-              </div>
-            }
-            id="basic-nav-dropdown"
-            show={isMenuOpen}
-            onToggle={(isOpen) => setIsMenuOpen(isOpen)}
-            align="end"
-            className="profile-dropdown"
-          >
-            <NavDropdown.Item>Профиль</NavDropdown.Item>
-            <NavDropdown.Item>Настройки</NavDropdown.Item>
-            <NavDropdown.Divider />
-            <NavDropdown.Item>Выход</NavDropdown.Item>
-          </NavDropdown>
-        </div>
+        {/* Условный рендеринг: кнопка "Войти" или иконка профиля */}
+{isAuthenticated ? (
+  <div className="profile-container" ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+    <Dropdown show={isMenuOpen} onToggle={() => setIsMenuOpen((prev) => !prev)} className="profile-dropdown" align="start" drop="start">
+      <Dropdown.Toggle
+        as="span"
+        id="profile-dropdown"
+        style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}
+        onClick={() => setIsMenuOpen((prev) => !prev)}
+      >
+      <div className="profile-icon">
+        <img
+          src={'./icons8-гость-мужчина-48.png'}
+          alt="Профиль"
+          className="profile-image"
+        />
+      </div>
+    </Dropdown.Toggle>
+    <Dropdown.Menu>
+      <Dropdown.Item>
+        <img src="./icons8-гость-мужчина-48.png" alt="" />
+        {user && user.username ? user.username : 'Имя'}
+      </Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item className="profile-right" onClick={() => { window.location.href = '/organizer'; }}>
+        Профиль
+      </Dropdown.Item>
+      <Dropdown.Item className="profile-right">Настройки</Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item className="profile-right" onClick={logout}>Выход</Dropdown.Item>
+    </Dropdown.Menu>
+    </Dropdown>
+  </div>
+) : (
+          <LoginButton />
+        )}
       </Container>
     </Navbar>
   );

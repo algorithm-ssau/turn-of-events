@@ -2,17 +2,17 @@ import { Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './EventCard.css';
 
-const EventCard = ({ title, date, location, description, customClass }) => {
+const EventCard = ({ id, title, date, location, description, imageUrl, customClass }) => {
     const navigate = useNavigate();
-    const eventId = title?.match(/\d+/)?.[0] || Math.floor(Math.random() * 100 + 1);
-    
     const handleCardClick = () => {
-        navigate(`/event/${eventId}`);
+        if (id) {
+            navigate(`/event/${id}`);
+        }
     };
     
     return (
-        <Card className={`event-card ${customClass || ''}`} onClick={handleCardClick}>
-            <Card.Img variant="top" src="https://via.placeholder.com/300x200" />
+        <Card className={`event-card ${customClass || ''}`} onClick={handleCardClick} style={{ cursor: 'pointer' }}>
+            <Card.Img variant="top" src={imageUrl || "https://via.placeholder.com/300x200"} />
             <Card.Body>
                 <Card.Title>{title || 'Название мероприятия'}</Card.Title>
                 <div className="event-details">

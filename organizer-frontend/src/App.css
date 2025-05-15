@@ -42,6 +42,7 @@
   color: #888;
 }
 header {
+    display:block;
     padding: 10px 0px 10px 9px;
     background-color: #87D2A7;
     color: black;
@@ -56,4 +57,17 @@ header {
     position: absolute;
     width: 50px;
     margin: -10px 0px 0px 80px;
+}
+
+.profile-icon{
+    position:absolute;
+    display:inline-block;
+    right:0;
+    top:0;
+    padding:0;
+    margin:0;
+}
+.profile-image {
+    padding: 0;
+    margin: 0;
 }

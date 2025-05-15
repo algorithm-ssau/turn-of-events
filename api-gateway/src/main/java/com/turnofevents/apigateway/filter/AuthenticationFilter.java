@@ -50,8 +50,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        // Разрешаем все GET запросы к событиям без аутентификации
-        if (path.startsWith("/api/events/") && HttpMethod.GET.equals(method)) {
+        // Разрешаем все GET запросы к событиям без аутентификации (включая /api/events и /api/events/..)
+        if ((path.equals("/api/events") || path.startsWith("/api/events/")) && HttpMethod.GET.equals(method)) {
             return chain.filter(exchange);
         }
 
@@ -81,14 +81,9 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         // Токен валиден, добавляем информацию о пользователе в заголовки запроса
         String username = jwtUtil.getUsernameFromToken(token);
-        List<String> roles = jwtUtil.getRolesFromToken(token);
-        
-        // Формируем заголовок с ролями
-        String rolesHeader = roles.stream().collect(Collectors.joining(","));
-        
+        // Игнорируем роли, не добавляем X-Auth-Roles
         ServerHttpRequest modifiedRequest = request.mutate()
                 .header("X-Auth-User", username)
-                .header("X-Auth-Roles", rolesHeader)
                 .build();
 
         return chain.filter(exchange.mutate().request(modifiedRequest).build());
@@ -138,4 +133,4 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     public int getOrder() {
         return -100; // Высокий приоритет для запуска до других фильтров
     }
-} 
+}

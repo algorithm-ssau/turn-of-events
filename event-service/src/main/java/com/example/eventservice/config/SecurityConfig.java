@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.core.Ordered;
 
 @Configuration
 @EnableWebSecurity
@@ -31,29 +32,41 @@ import java.util.stream.Collectors;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public ApiGatewayAuthenticationFilter apiGatewayAuthenticationFilter() {
+        return new ApiGatewayAuthenticationFilter();
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ApiGatewayAuthenticationFilter apiGatewayAuthenticationFilter) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)  // Отключаем CSRF для REST API
                 .httpBasic(AbstractHttpConfigurer::disable)  // Отключаем HTTP Basic, т.к. используем JWT в API Gateway
                 .formLogin(AbstractHttpConfigurer::disable)  // Отключаем форму логина
                 .authorizeHttpRequests(auth -> auth
-                        // Разрешаем доступ к публичным эндпоинтам всем
-                        .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
+                        // Разрешаем доступ ко всем GET-запросам
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        // Делаем документацию Swagger общедоступной
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         // Все остальные запросы требуют аутентификации
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Отключаем сессии
                 )
-                .addFilterBefore(new ApiGatewayAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(apiGatewayAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     /**
      * Фильтр для проверки и применения аутентификации от API Gateway
      */
-    private static class ApiGatewayAuthenticationFilter extends OncePerRequestFilter {
+    private static class ApiGatewayAuthenticationFilter extends OncePerRequestFilter implements Ordered {
+        @Override
+        public int getOrder() {
+            return Ordered.LOWEST_PRECEDENCE - 1;
+        }
+
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
                 throws ServletException, IOException {
@@ -83,4 +96,4 @@ public class SecurityConfig {
             filterChain.doFilter(request, response);
         }
     }
-} 
+}
