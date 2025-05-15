@@ -47,6 +47,7 @@ const Events = ({ title }) => {
                         {events.map((event) => (
                             <Col key={event.id}>
                                 <EventCard
+                                    id={event.id}
                                     title={event.title}
                                     date={event.date}
                                     location={event.place}
