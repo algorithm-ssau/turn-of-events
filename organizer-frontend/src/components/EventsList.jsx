@@ -68,6 +68,18 @@ function EventsList({}) {
         setSelected([]);
     };
 
+    const handleDeleteEvent = async (eventId) => {
+        if (!eventId || !token) return;
+        await fetch(`${API_URL}/${eventId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        setEvents(events => events.filter(ev => ev.id !== eventId));
+        setSelected(selected => selected.filter(idx => events[idx]?.id !== eventId));
+    };
+
     return (
         <>
             <Header />

@@ -1,8 +1,10 @@
 import React from "react";
 
 function EventTableRow({ event, index, selected, onSelect, onClick }) {
+    // Проверка на пустой event
+    if (!event) return null;
     return (
-        <tr style={{borderBottom: '1px solid #eee', cursor: 'pointer'}} onClick={() => onClick(index)}>
+        <tr style={{borderBottom: '1px solid #eee', cursor: 'pointer', color: '#222'}} onClick={() => onClick(index)}>
             <td style={{padding: '10px'}} onClick={e => e.stopPropagation()}>
                 <input
                     type="checkbox"
@@ -10,12 +12,16 @@ function EventTableRow({ event, index, selected, onSelect, onClick }) {
                     onChange={() => onSelect(index)}
                 />
             </td>
-            <td style={{padding: '10px', color: '#1976d2', textDecoration: 'underline'}}>{event.title}</td>
-            <td style={{padding: '10px'}}>{event.date}</td>
-            <td style={{padding: '10px'}}>{event.location || event.place}</td>
-            <td style={{padding: '10px'}}>{event.description}</td>
-            <td style={{padding: '10px'}}>
-                <img src={event.img || event.imageUrl} alt={event.title} style={{width: 60, height: 60, objectFit: 'cover', borderRadius: 8}} />
+            <td style={{padding: '10px', color: '#1976d2', textDecoration: 'underline'}}>{event.title || '-'}</td>
+            <td style={{padding: '10px', color: '#222'}}>{event.date || '-'}</td>
+            <td style={{padding: '10px', color: '#222'}}>{event.place || event.location || '-'}</td>
+            <td style={{padding: '10px', maxWidth: 250, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#222'}}>{event.description || '-'}</td>
+            <td style={{padding: '10px', display: 'flex', alignItems: 'center', gap: 8}}>
+                {event.img || event.imageUrl ? (
+                    <img src={event.img || event.imageUrl} alt={event.title} style={{width: 60, height: 60, objectFit: 'cover', borderRadius: 8}} />
+                ) : (
+                    <span style={{color:'#aaa'}}>Нет изображения</span>
+                )}
             </td>
         </tr>
     );
