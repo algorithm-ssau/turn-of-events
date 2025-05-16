@@ -14,7 +14,7 @@ function getRandomEvents(events, maxCount) {
   return shuffled.slice(0, count);
 }
 
-const UpcomingEvents = ({ title = "Ближайшие мероприятия", maxCount = 6 }) => {
+const UpcomingEvents = ({ title = "Ближайшие мероприятия", maxCount = 10 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [events, setEvents] = useState([]);
   const [visibleCards, setVisibleCards] = useState([]);
@@ -26,8 +26,8 @@ const UpcomingEvents = ({ title = "Ближайшие мероприятия", m
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get('/api/events');
-        const allEvents = response.data && Array.isArray(response.data.content) ? response.data.content : [];
+        const response = await axios.get('/api/events/upcoming');
+        const allEvents = Array.isArray(response.data) ? response.data : [];
         const randomEvents = getRandomEvents(allEvents, maxCount);
         setEvents(randomEvents);
       } catch (err) {
@@ -99,8 +99,9 @@ const UpcomingEvents = ({ title = "Ближайшие мероприятия", m
                     id={item.event.id}
                     title={item.event.title}
                     date={item.event.date}
-                    location={item.event.place || item.event.location}
+                    location={item.event.place}
                     description={item.event.description}
+                    imageUrl={item.event.imageUrl}
                   />
                 </div>
               ))}

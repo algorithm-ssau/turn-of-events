@@ -189,7 +189,8 @@ services:
       context: ./user-service
       dockerfile: Dockerfile
     environment:
-      SPRING_PROFILES_ACTIVE: "docker"
+      - SPRING_PROFILES_ACTIVE=docker
+      - JWT_SECRET=D4fN8Qr6Zu1WgX9Cv3PyL5Mk2Jh7Vt0s
     ports:
       - "8000:8080"
     networks:

@@ -2,7 +2,7 @@ import { Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './EventCard.css';
 
-const EventCard = ({ id, title, date, location, description, customClass }) => {
+const EventCard = ({ id, title, date, location, description, imageUrl, customClass }) => {
     const navigate = useNavigate();
     const handleCardClick = () => {
         if (id) {
@@ -12,7 +12,7 @@ const EventCard = ({ id, title, date, location, description, customClass }) => {
     
     return (
         <Card className={`event-card ${customClass || ''}`} onClick={handleCardClick} style={{ cursor: 'pointer' }}>
-            <Card.Img variant="top" src="https://via.placeholder.com/300x200" />
+            <Card.Img variant="top" src={imageUrl || "https://via.placeholder.com/300x200"} />
             <Card.Body>
                 <Card.Title>{title || 'Название мероприятия'}</Card.Title>
                 <div className="event-details">
