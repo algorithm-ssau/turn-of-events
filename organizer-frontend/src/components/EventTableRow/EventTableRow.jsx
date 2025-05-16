@@ -1,6 +1,6 @@
 import React from "react";
 
-function EventTableRow({ event, index, selected, onSelect, onClick }) {
+function EventTableRow({ event, index, selected, onSelect, onClick, onDelete }) {
     // Проверка на пустой event
     if (!event) return null;
     return (
@@ -22,6 +22,13 @@ function EventTableRow({ event, index, selected, onSelect, onClick }) {
                 ) : (
                     <span style={{color:'#aaa'}}>Нет изображения</span>
                 )}
+            </td>
+            <td style={{padding: '10px'}} onClick={e => e.stopPropagation()}>
+                <button
+                    style={{background: '#e57373', color: '#fff', border: 'none', borderRadius: 6, padding: '4px 12px', cursor: 'pointer', fontWeight: 500}}
+                    onClick={() => onDelete && onDelete(event.id)}
+                    title="Удалить мероприятие"
+                >Удалить</button>
             </td>
         </tr>
     );
