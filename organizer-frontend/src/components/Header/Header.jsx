@@ -4,8 +4,8 @@ function Header() {
     return (
         <header>
             <img className="logoimg" src="./logo.png" />
-            <div style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)', display: 'inline-block' }}>
-                Оборот событий
+            <div style={{ textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)', display: 'inline-block', whiteSpace:'pre' }}>
+                Оборот           событий
             </div>
             <div className="profile-icon">
                 <img
