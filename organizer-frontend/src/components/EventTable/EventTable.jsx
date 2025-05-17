@@ -1,7 +1,7 @@
 import React from "react";
 import EventTableRow from "../EventTableRow/EventTableRow.jsx";
 
-function EventTable({ events, selected, onSelect, onSelectAll, onRowClick }) {
+function EventTable({ events, selected, onSelect, onSelectAll, onRowClick, onDelete }) {
     return (
         <table style={{width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.04)'}}>
             <thead style={{background: '#87D2A7', color: '#0F114B'}}>
@@ -18,6 +18,7 @@ function EventTable({ events, selected, onSelect, onSelectAll, onRowClick }) {
                     <th style={{padding: '12px', textAlign: 'left'}}>Место</th>
                     <th style={{padding: '12px', textAlign: 'left'}}>Описание</th>
                     <th style={{padding: '12px', textAlign: 'left'}}>Изображение</th>
+                    <th style={{padding: '12px', textAlign: 'left'}}>Действия</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +30,7 @@ function EventTable({ events, selected, onSelect, onSelectAll, onRowClick }) {
                         selected={selected}
                         onSelect={onSelect}
                         onClick={onRowClick}
+                        onDelete={onDelete}
                     />
                 ))}
             </tbody>

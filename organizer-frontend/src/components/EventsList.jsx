@@ -60,12 +60,30 @@ function EventsList({}) {
     };
 
     const handleDeleteSelected = async () => {
-        for (const idx of selected) {
-            const event = events[idx];
-            await fetch(`${API_URL}/${event.id}`, { method: 'DELETE' });
+        // Собираем id выбранных событий
+        const idsToDelete = selected.map(idx => events[idx]?.id).filter(Boolean);
+        for (const id of idsToDelete) {
+            await fetch(`${API_URL}/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
         }
-        setEvents(events.filter((_, idx) => !selected.includes(idx)));
+        setEvents(events => events.filter(ev => !idsToDelete.includes(ev.id)));
         setSelected([]);
+    };
+
+    const handleDeleteEvent = async (eventId) => {
+        if (!eventId || !token) return;
+        await fetch(`${API_URL}/${eventId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        setEvents(events => events.filter(ev => ev.id !== eventId));
+        setSelected(selected => selected.filter(idx => events[idx]?.id !== eventId));
     };
 
     return (
@@ -113,6 +131,7 @@ function EventsList({}) {
                                     onSelect={handleSelect}
                                     onSelectAll={handleSelectAll}
                                     onRowClick={setSelectedEventIdx}
+                                    onDelete={handleDeleteEvent}
                                 />
                                 {showModal && (
                                     <EventCreateForm onAdd={handleAddEvent} onClose={() => setShowModal(false)} />
