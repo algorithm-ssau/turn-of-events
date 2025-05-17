@@ -57,6 +57,7 @@ header {
     position: absolute;
     width: 50px;
     margin: -10px 0px 0px 80px;
+    pointer-events: none;
 }
 
 .profile-icon{
