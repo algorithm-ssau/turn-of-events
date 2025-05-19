@@ -1,19 +1,77 @@
 import React from "react";
+import './EventDetails.css';
+
+function formatDate(dateStr, timeStr) {
+    if (!dateStr) return "—";
+    const date = new Date(dateStr + (timeStr ? 'T' + timeStr : ''));
+    return date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' }) +
+        (timeStr ? `, ${date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}` : '');
+}
 
 function EventDetails({ event, onBack }) {
+    if (!event) return null;
     return (
-        <div style={{padding: 32}}>
-            <button onClick={onBack} style={{marginBottom: 24, background:'#87D2A7', color:'#0F114B', border:'none', borderRadius:8, padding:'10px 20px', fontWeight:600, fontSize:15, cursor:'pointer'}}>Назад</button>
-            <h2 style={{marginBottom: 16}}>{event.title}</h2>
-            <img src={event.img || event.imageUrl} alt={event.title} style={{width: 220, height: 220, objectFit: 'cover', borderRadius: 16, marginBottom: 24}} />
-            <div><b>Дата:</b> {event.date} {event.time && <span>в {event.time}</span>}</div>
-            <div><b>Место:</b> {event.location || event.place}</div>
-            <div><b>Цена:</b> {event.price} ₽</div>
-            <div><b>Жанр:</b> {event.genre}</div>
-            <div><b>Длительность:</b> {event.duration}</div>
-            <div><b>Режиссёр:</b> {event.director}</div>
-            <div><b>Ссылка:</b> <a href={event.link} target="_blank" rel="noopener noreferrer">{event.link}</a></div>
-            <div style={{marginTop: 16}}><b>Описание:</b><br />{event.description}</div>
+        <div className="event-details-card animate-in">
+            <button className="event-details-back" onClick={onBack}>
+                ← Назад
+            </button>
+            <div className="event-details-main">
+                <div className="event-details-img-wrap">
+                    <img
+                        className="event-details-img"
+                        src={event.img || event.imageUrl || './no-image.png'}
+                        alt={event.title}
+                        onError={e => e.target.src = './no-image.png'}
+                    />
+                </div>
+                <div className="event-details-info">
+                    <h2 className="event-details-title">{event.title || 'Без названия'}</h2>
+                    <div className="event-details-row">
+                        <span className="event-details-icon">📅</span>
+                        <span>{formatDate(event.date, event.time)}</span>
+                    </div>
+                    {event.place || event.location ? (
+                        <div className="event-details-row">
+                            <span className="event-details-icon">📍</span>
+                            <span>{event.place || event.location}</span>
+                        </div>
+                    ) : null}
+                    {event.price ? (
+                        <div className="event-details-row">
+                            <span className="event-details-icon">💸</span>
+                            <span>{event.price} ₽</span>
+                        </div>
+                    ) : null}
+                    {event.genre ? (
+                        <div className="event-details-row">
+                            <span className="event-details-icon">🎭</span>
+                            <span>{event.genre}</span>
+                        </div>
+                    ) : null}
+                    {event.duration ? (
+                        <div className="event-details-row">
+                            <span className="event-details-icon">⏱️</span>
+                            <span>{event.duration}</span>
+                        </div>
+                    ) : null}
+                    {event.director ? (
+                        <div className="event-details-row">
+                            <span className="event-details-icon">🎬</span>
+                            <span>{event.director}</span>
+                        </div>
+                    ) : null}
+                    {event.link ? (
+                        <div className="event-details-row">
+                            <span className="event-details-icon">🔗</span>
+                            <a href={event.link} target="_blank" rel="noopener noreferrer" className="event-details-link">{event.link}</a>
+                        </div>
+                    ) : null}
+                </div>
+            </div>
+            <div className="event-details-desc-block">
+                <div className="event-details-desc-title">Описание</div>
+                <div className="event-details-desc">{event.description || '—'}</div>
+            </div>
         </div>
     );
 }
